@@ -11,8 +11,8 @@
  * const { rankings, posicaoUsuario, atualizarRanking } = useRanking(usuario?.id);
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { rankingService, RankingEntry, RankingData } from '../services/rankingService';
+import { useCallback, useEffect, useState } from 'react';
+import { RankingData, RankingEntry, rankingService } from '../services/rankingService';
 import { logger } from '../utils/logger';
 
 /**
@@ -87,16 +87,25 @@ export const useRanking = (usuarioId?: string): UseRankingReturn => {
   useEffect(() => {
     logger.debug('Inicializando useRanking hook', 'useRanking', { usuarioId });
     
-    // Carrega rankings iniciais
-    const rankingsIniciais: RankingData = {
-      global: rankingService.obterRankingGlobal(),
-      semanal: rankingService.obterRankingSemanal(),
-      mensal: rankingService.obterRankingMensal(),
-      categoria: {}
+    // Carrega rankings iniciais de forma assíncrona
+    const carregarRankings = async () => {
+      try {
+        const rankingsIniciais: RankingData = {
+          global: rankingService.obterRankingGlobal(),
+          semanal: rankingService.obterRankingSemanal(),
+          mensal: rankingService.obterRankingMensal(),
+          categoria: {}
+        };
+        
+        setRankings(rankingsIniciais);
+        setCarregando(false);
+      } catch (error) {
+        logger.error('Erro ao carregar rankings no hook', 'useRanking', {}, error as Error);
+        setCarregando(false);
+      }
     };
     
-    setRankings(rankingsIniciais);
-    setCarregando(false);
+    carregarRankings();
     
     // Adiciona listener para atualizações automáticas
     rankingService.adicionarListener(atualizarRankingsLocais);
@@ -106,7 +115,7 @@ export const useRanking = (usuarioId?: string): UseRankingReturn => {
       rankingService.removerListener(atualizarRankingsLocais);
       logger.debug('useRanking hook desmontado', 'useRanking');
     };
-  }, [atualizarRankingsLocais]);
+  }, [atualizarRankingsLocais, usuarioId]);
 
   /**
    * Obtém ranking atual baseado no filtro ativo

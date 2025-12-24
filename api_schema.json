@@ -1,0 +1,537 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "Kombinu API",
+        "version": "1.0.0",
+        "description": "API da plataforma educacional Kombinu"
+    },
+    "paths": {
+        "/api/courses/": {
+            "get": {
+                "operationId": "courses_list",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "required": false,
+                        "in": "query",
+                        "description": "A page number within the paginated result set.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "tags": [
+                    "courses"
+                ],
+                "security": [
+                    {
+                        "tokenAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedCourseList"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/courses/{course_id}/enroll/": {
+            "post": {
+                "operationId": "courses_enroll_create",
+                "description": "Inscreve o usuário logado em um curso específico",
+                "summary": "Inscrever-se em curso",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "course_id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Cursos"
+                ],
+                "security": [
+                    {
+                        "tokenAuth": []
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Inscrição realizada com sucesso"
+                    },
+                    "200": {
+                        "description": "Usuário já estava inscrito"
+                    },
+                    "404": {
+                        "description": "Curso não encontrado"
+                    }
+                }
+            }
+        },
+        "/api/courses/{id}/": {
+            "get": {
+                "operationId": "courses_retrieve",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "courses"
+                ],
+                "security": [
+                    {
+                        "tokenAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Course"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/courses/categories/": {
+            "get": {
+                "operationId": "courses_categories_list",
+                "description": "Lista todos os cursos ativos com filtros opcionais",
+                "summary": "Listar cursos",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "category",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "ID da categoria para filtrar"
+                    },
+                    {
+                        "in": "query",
+                        "name": "difficulty",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "advanced",
+                                "beginner",
+                                "intermediate"
+                            ]
+                        },
+                        "description": "Nível de dificuldade"
+                    },
+                    {
+                        "name": "page",
+                        "required": false,
+                        "in": "query",
+                        "description": "A page number within the paginated result set.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "tags": [
+                    "Cursos"
+                ],
+                "security": [
+                    {
+                        "tokenAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedCourseList"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/courses/lessons/{lesson_id}/progress/": {
+            "post": {
+                "operationId": "courses_lessons_progress_create",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "lesson_id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "courses"
+                ],
+                "security": [
+                    {
+                        "tokenAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "No response body"
+                    }
+                }
+            }
+        },
+        "/api/courses/my-courses/": {
+            "get": {
+                "operationId": "courses_my_courses_list",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "required": false,
+                        "in": "query",
+                        "description": "A page number within the paginated result set.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "tags": [
+                    "courses"
+                ],
+                "security": [
+                    {
+                        "tokenAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedEnrollmentList"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Course": {
+                "type": "object",
+                "description": "Serializer for Course model.",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "instructor_name": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "category_name": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "lessons": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Lesson"
+                        },
+                        "readOnly": true
+                    },
+                    "total_lessons": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "title": {
+                        "type": "string",
+                        "maxLength": 200
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "thumbnail": {
+                        "type": "string",
+                        "format": "uri",
+                        "nullable": true
+                    },
+                    "difficulty": {
+                        "$ref": "#/components/schemas/DifficultyEnum"
+                    },
+                    "durantion_hours": {
+                        "type": "integer",
+                        "maximum": 9223372036854775807,
+                        "minimum": 0,
+                        "format": "int64"
+                    },
+                    "is_active": {
+                        "type": "boolean"
+                    },
+                    "is_offline_available": {
+                        "type": "boolean"
+                    },
+                    "price": {
+                        "type": "string",
+                        "format": "decimal",
+                        "pattern": "^-?\\d{0,8}(?:\\.\\d{0,2})?$"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "category": {
+                        "type": "integer"
+                    },
+                    "instructor": {
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "category",
+                    "category_name",
+                    "created_at",
+                    "description",
+                    "id",
+                    "instructor",
+                    "instructor_name",
+                    "lessons",
+                    "title",
+                    "total_lessons",
+                    "updated_at"
+                ]
+            },
+            "DifficultyEnum": {
+                "enum": [
+                    "beginner",
+                    "intermediate",
+                    "advanced"
+                ],
+                "type": "string",
+                "description": "* `beginner` - Iniciante\n* `intermediate` - Intermediário\n* `advanced` - Avançado"
+            },
+            "Enrollment": {
+                "type": "object",
+                "description": "Serializer for Enrollment model.",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "course": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/Course"
+                            }
+                        ],
+                        "readOnly": true
+                    },
+                    "student_name": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/StatusEnum"
+                    },
+                    "progress_percentage": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "enrolled_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "completed_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "student": {
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "course",
+                    "enrolled_at",
+                    "id",
+                    "student",
+                    "student_name"
+                ]
+            },
+            "Lesson": {
+                "type": "object",
+                "description": "Serializer for Lesson model.",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "title": {
+                        "type": "string",
+                        "maxLength": 200
+                    },
+                    "content": {
+                        "type": "string"
+                    },
+                    "lesson_type": {
+                        "$ref": "#/components/schemas/LessonTypeEnum"
+                    },
+                    "video_file": {
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "duration_minutes": {
+                        "type": "integer",
+                        "maximum": 9223372036854775807,
+                        "minimum": 0,
+                        "format": "int64"
+                    },
+                    "order": {
+                        "type": "integer",
+                        "maximum": 9223372036854775807,
+                        "minimum": 0,
+                        "format": "int64"
+                    },
+                    "is_preview": {
+                        "type": "boolean"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "course": {
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "content",
+                    "course",
+                    "created_at",
+                    "id",
+                    "lesson_type",
+                    "order",
+                    "title"
+                ]
+            },
+            "LessonTypeEnum": {
+                "enum": [
+                    "video",
+                    "text",
+                    "quiz",
+                    "assignment"
+                ],
+                "type": "string",
+                "description": "* `video` - Vídeo\n* `text` - Texto\n* `quiz` - Quiz\n* `assignment` - Tarefa"
+            },
+            "PaginatedCourseList": {
+                "type": "object",
+                "required": [
+                    "count",
+                    "results"
+                ],
+                "properties": {
+                    "count": {
+                        "type": "integer",
+                        "example": 123
+                    },
+                    "next": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "uri",
+                        "example": "http://api.example.org/accounts/?page=4"
+                    },
+                    "previous": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "uri",
+                        "example": "http://api.example.org/accounts/?page=2"
+                    },
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Course"
+                        }
+                    }
+                }
+            },
+            "PaginatedEnrollmentList": {
+                "type": "object",
+                "required": [
+                    "count",
+                    "results"
+                ],
+                "properties": {
+                    "count": {
+                        "type": "integer",
+                        "example": 123
+                    },
+                    "next": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "uri",
+                        "example": "http://api.example.org/accounts/?page=4"
+                    },
+                    "previous": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "uri",
+                        "example": "http://api.example.org/accounts/?page=2"
+                    },
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Enrollment"
+                        }
+                    }
+                }
+            },
+            "StatusEnum": {
+                "enum": [
+                    "active",
+                    "completed",
+                    "suspended"
+                ],
+                "type": "string",
+                "description": "* `active` - Ativo\n* `completed` - Concluído\n* `suspended` - Suspenso"
+            }
+        },
+        "securitySchemes": {
+            "tokenAuth": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "Authorization",
+                "description": "Token-based authentication with required prefix \"Token\""
+            }
+        }
+    }
+}

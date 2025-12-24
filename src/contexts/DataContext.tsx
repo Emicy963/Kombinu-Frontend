@@ -6,11 +6,11 @@
 
 import React, { createContext, useContext } from 'react';
 import { useContent } from '../hooks/useContent';
+import { useErrorHandler } from '../hooks/useErrorHandler';
 import { useProgress } from '../hooks/useProgress';
 import { useRanking } from '../hooks/useRanking'; /* NOVO */
-import type { Conteudo, ProgressoUsuario, FormularioConteudo } from '../types';
+import type { Conteudo, FormularioConteudo, ProgressoUsuario } from '../types';
 import { logger } from '../utils/logger';
-import { useErrorHandler } from '../hooks/useErrorHandler';
 
 interface DataContextType {
   conteudos: Conteudo[];
@@ -19,15 +19,15 @@ interface DataContextType {
   carregandoProgressos: boolean;
   
   // Funções de conteúdo
-  criarConteudo: (dadosConteudo: FormularioConteudo, criadorId: string, criadorNome: string) => Conteudo;
-  atualizarConteudo: (id: string, conteudo: Partial<Conteudo>) => void;
-  deletarConteudo: (id: string) => void;
+  criarConteudo: (dadosConteudo: FormularioConteudo, criadorId: string, criadorNome: string) => Promise<Conteudo>;
+  atualizarConteudo: (id: string, conteudo: Partial<Conteudo>) => Promise<Conteudo | undefined>;
+  deletarConteudo: (id: string) => Promise<boolean>;
   obterConteudo: (id: string) => Conteudo | undefined;
   obterConteudosPorCriador: (criadorId: string) => Conteudo[];
   obterConteudosPublicos: () => Conteudo[];
   filtrarConteudos: (filtros: any) => Conteudo[];
-  incrementarVisualizacao: (id: string) => void;
-  toggleLike: (id: string) => void;
+  incrementarVisualizacao: (id: string) => Promise<void>;
+  toggleLike: (id: string) => Promise<void>;
   
   // Funções de progresso
   salvarProgresso: (progresso: ProgressoUsuario) => void;
@@ -105,12 +105,12 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // Wrapper para funções de conteúdo com logging
-  const criarConteudoComLog = (
+  const criarConteudoComLog = async (
     dadosConteudo: FormularioConteudo,
     criadorId: string,
     criadorNome: string
-  ): Conteudo => {
-    return executeWithErrorHandling(() => {
+  ): Promise<Conteudo> => {
+    return executeWithErrorHandling(async () => {
       logger.info(
         `Criando novo conteúdo: ${dadosConteudo.titulo}`,
         'DataContext.criarConteudo',
@@ -122,7 +122,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         }
       );
       
-      const novoConteudo = contentHook.criarConteudo(dadosConteudo, criadorId, criadorNome);
+      const novoConteudo = await contentHook.criarConteudo(dadosConteudo, criadorId, criadorNome);
       
       logger.info(
         `Conteúdo criado com sucesso: ${novoConteudo.titulo}`,
@@ -131,7 +131,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       );
       
       return novoConteudo;
-    }, 'criarConteudo') as Conteudo;
+    }, 'criarConteudo') as Promise<Conteudo>;
   };
 
   /* NOVO - Função integrada para atualizar ranking após quiz */
@@ -163,6 +163,30 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     }, 'atualizarRankingAposQuiz');
   };
 
+  // Extrair apenas as funções dos hooks, excluindo estado
+  const {
+    criarConteudo: criarConteudoOriginal,
+    atualizarConteudo,
+    deletarConteudo,
+    obterConteudo,
+    obterConteudosPorCriador,
+    obterConteudosPublicos,
+    filtrarConteudos,
+    incrementarVisualizacao,
+    toggleLike
+  } = contentHook;
+
+  const {
+    salvarProgresso: salvarProgressoOriginal,
+    iniciarProgresso,
+    concluirProgresso,
+    atualizarProgresso,
+    obterProgresso,
+    obterProgressosUsuario,
+    obterProgressosConteudo,
+    calcularEstatisticasUsuario
+  } = progressHook;
+
   return (
     <DataContext.Provider value={{
       // Estado de conteúdos
@@ -174,12 +198,25 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       carregandoProgressos: progressHook.carregando,
       
       // Funções de conteúdo
-      ...contentHook,
       criarConteudo: criarConteudoComLog,
+      atualizarConteudo,
+      deletarConteudo,
+      obterConteudo,
+      obterConteudosPorCriador,
+      obterConteudosPublicos,
+      filtrarConteudos,
+      incrementarVisualizacao,
+      toggleLike,
       
       // Funções de progresso
-      ...progressHook,
       salvarProgresso: salvarProgressoComLog,
+      iniciarProgresso,
+      concluirProgresso,
+      atualizarProgresso,
+      obterProgresso,
+      obterProgressosUsuario,
+      obterProgressosConteudo,
+      calcularEstatisticasUsuario,
       
       /* NOVO - Função de ranking integrada */
       atualizarRankingAposQuiz

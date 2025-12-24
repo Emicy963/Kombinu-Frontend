@@ -3,11 +3,11 @@
  * Gerencia login, registro e operações relacionadas ao usuário
  */
 
-import { storageService } from './storageService';
-import { calcularNivel, gerarId, validarEmail } from '../utils/helpers';
-import type { Usuario, DadosLogin, DadosRegistro } from '../types';
-import { logger } from '../utils/logger';
+import type { DadosLogin, DadosRegistro, Usuario } from '../types';
 import { ValidationError } from '../utils/customErrors';
+import { calcularNivel, gerarId, validarEmail } from '../utils/helpers';
+import { logger } from '../utils/logger';
+import { storageService } from './storageService';
 
 /**
  * Classe para gerenciar autenticação de usuários

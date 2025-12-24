@@ -3,7 +3,7 @@
  * Fornece interface simplificada para operações de progresso
  */
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { progressService } from '../services/progressService';
 import type { ProgressoUsuario } from '../types';
 
@@ -22,19 +22,24 @@ export const useProgress = () => {
    * Carrega progressos ao inicializar o hook
    */
   useEffect(() => {
-    carregarProgressos();
+    const carregarDados = async () => {
+      await carregarProgressos();
+    };
+    carregarDados();
   }, []);
 
   /**
    * Carrega todos os progressos
    */
-  const carregarProgressos = (): void => {
+  const carregarProgressos = async (): Promise<void> => {
     try {
       setCarregando(true);
-      const progressosCarregados = progressService.carregarProgressos();
-      setProgressos(progressosCarregados);
+      const progressosCarregados = await progressService.carregarProgressos();
+      setProgressos(progressosCarregados || []);
     } catch (error) {
       console.error('Erro ao carregar progressos:', error);
+      // Em caso de erro, garante que seja um array vazio
+      setProgressos([]);
     } finally {
       setCarregando(false);
     }

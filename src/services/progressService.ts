@@ -3,8 +3,10 @@
  * Centraliza operações relacionadas ao progresso de aprendizado
  */
 
-import { storageService } from './storageService';
+import axios from 'axios';
 import type { ProgressoUsuario } from '../types';
+import { API_BASE_URL } from '../utils/constants';
+import { storageService } from './storageService';
 
 /**
  * Classe para gerenciar progresso dos usuários
@@ -14,32 +16,45 @@ class ProgressService {
    * Carrega todos os progressos
    * @returns Array de progressos
    */
-  carregarProgressos(): ProgressoUsuario[] {
-    return storageService.carregarProgressos();
+  async carregarProgressos(): Promise<ProgressoUsuario[]> {
+    try {
+      // Temporariamente desabilitado - endpoint não existe na API
+      // const response = await axios.get(`${API_BASE_URL}/progress`);
+      // return response.data;
+
+      // Fallback direto para localStorage
+      return storageService.carregarProgressos();
+    } catch (error) {
+      console.error('Erro ao carregar progressos:', error);
+      return storageService.carregarProgressos();
+    }
   }
 
   /**
    * Salva ou atualiza progresso de um usuário
    * @param novoProgresso - Dados do progresso
    */
-  salvarProgresso(novoProgresso: ProgressoUsuario): void {
-    const progressos = this.carregarProgressos();
-    
-    // Procura se já existe progresso para este usuário e conteúdo
-    const index = progressos.findIndex(progresso => 
-      progresso.usuarioId === novoProgresso.usuarioId && 
-      progresso.conteudoId === novoProgresso.conteudoId
-    );
+  async salvarProgresso(novoProgresso: ProgressoUsuario): Promise<void> {
+    try {
+      await axios.post(`${API_BASE_URL}/progress`, novoProgresso);
+    } catch (error) {
+      console.error('Erro ao salvar progresso:', error);
+      // Fallback para localStorage
+      const progressos = storageService.carregarProgressos();
+      
+      const index = progressos.findIndex(progresso => 
+        progresso.usuarioId === novoProgresso.usuarioId && 
+        progresso.conteudoId === novoProgresso.conteudoId
+      );
 
-    if (index !== -1) {
-      // Atualiza progresso existente
-      progressos[index] = novoProgresso;
-    } else {
-      // Adiciona novo progresso
-      progressos.push(novoProgresso);
+      if (index !== -1) {
+        progressos[index] = novoProgresso;
+      } else {
+        progressos.push(novoProgresso);
+      }
+
+      storageService.salvarProgressos(progressos);
     }
-
-    storageService.salvarProgressos(progressos);
   }
 
   /**
@@ -48,12 +63,14 @@ class ProgressService {
    * @param conteudoId - ID do conteúdo
    * @returns Progresso encontrado ou undefined
    */
-  obterProgresso(usuarioId: string, conteudoId: string): ProgressoUsuario | undefined {
-    const progressos = this.carregarProgressos();
-    return progressos.find(progresso => 
-      progresso.usuarioId === usuarioId && 
-      progresso.conteudoId === conteudoId
-    );
+  async obterProgresso(usuarioId: string, conteudoId: string): Promise<ProgressoUsuario | undefined> {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/progress/${usuarioId}/${conteudoId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao obter progresso:', error);
+      return undefined;
+    }
   }
 
   /**
@@ -61,9 +78,14 @@ class ProgressService {
    * @param usuarioId - ID do usuário
    * @returns Array de progressos do usuário
    */
-  obterProgressosUsuario(usuarioId: string): ProgressoUsuario[] {
-    const progressos = this.carregarProgressos();
-    return progressos.filter(progresso => progresso.usuarioId === usuarioId);
+  async obterProgressosUsuario(usuarioId: string): Promise<ProgressoUsuario[]> {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/progress/user/${usuarioId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao obter progressos do usuário:', error);
+      return [];
+    }
   }
 
   /**

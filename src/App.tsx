@@ -1,23 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Moon, Sun } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import { ErrorBoundary } from './components/debug/ErrorBoundary';
 import { LogViewer } from './components/debug/LogViewer';
-import { logger } from './utils/logger';
-import LandingPage from './pages/LandingPage';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import DashboardCriador from './pages/DashboardCriador';
-import DashboardAprendiz from './pages/DashboardAprendiz';
-import Marketplace from './pages/Marketplace';
-import CriarConteudo from './pages/CriarConteudo';
-import VisualizarConteudo from './pages/VisualizarConteudo';
-import Quiz from './pages/Quiz';
-import Ranking from './pages/Ranking';
-import PainelAdmin from './pages/PainelAdmin';
+import { Header } from './components/layout/Header';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { DataProvider } from './contexts/DataContext';
-import { Header } from './components/layout/Header';
+import CriarConteudo from './pages/CriarConteudo';
+import DashboardAprendiz from './pages/DashboardAprendiz';
+import DashboardCriador from './pages/DashboardCriador';
+import LandingPage from './pages/LandingPage';
+import Login from './pages/Login';
+import Marketplace from './pages/Marketplace';
+import PainelAdmin from './pages/PainelAdmin';
+import Quiz from './pages/Quiz';
+import Ranking from './pages/Ranking';
+import Register from './pages/Register';
+import VisualizarConteudo from './pages/VisualizarConteudo';
+import { logger } from './utils/logger';
 
 // Dark Mode Toggle Component
 function DarkModeToggle() {
@@ -62,7 +62,19 @@ logger.info('Aplicação KOMBINU inicializada', 'App', {
 });
 
 function ProtectedRoute({ children, allowedRoles }: { children: React.ReactNode, allowedRoles: string[] }) {
-  const { usuario } = useAuth();
+  const { usuario, loading } = useAuth();
+  
+  // Mostra loading enquanto verifica autenticação
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Verificando autenticação...</p>
+        </div>
+      </div>
+    );
+  }
   
   if (!usuario) {
     logger.debug('Usuário não autenticado, redirecionando para login', 'ProtectedRoute');
@@ -82,7 +94,21 @@ function ProtectedRoute({ children, allowedRoles }: { children: React.ReactNode,
 }
 
 function AppRoutes() {
-  const { usuario } = useAuth();
+  const authContext = useAuth();
+  
+  // Verifica se o contexto está disponível
+  if (!authContext) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Inicializando aplicação...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  const { usuario } = authContext;
   
   useEffect(() => {
     if (usuario) {

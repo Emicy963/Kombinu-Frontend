@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
+import { BookOpen, Calendar, Eye, Heart, Plus, Star, TrendingUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Header } from '../components/layout/Header';
 import { useAuth } from '../contexts/AuthContext';
 import { useData } from '../contexts/DataContext';
-import { Plus, BookOpen, Eye, Heart, Users, TrendingUp, Calendar, Star } from 'lucide-react';
 
 export default function DashboardCriador() {
   const { usuario } = useAuth();
@@ -17,7 +15,6 @@ export default function DashboardCriador() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Cabeçalho */}
