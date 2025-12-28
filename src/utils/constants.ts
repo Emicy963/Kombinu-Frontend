@@ -52,3 +52,6 @@ export const STORAGE_KEYS = {
   CONTEUDOS: 'kombinu_conteudos',
   PROGRESSOS: 'kombinu_progressos',
 } as const;
+
+// URL da API
+export const API_BASE_URL = '/api';

@@ -13,9 +13,8 @@
  * - Strategy Pattern para diferentes tipos de ranking
  */
 
-import { storageService } from './storageService';
-import { logger } from '../utils/logger';
 import type { Usuario } from '../types';
+import { logger } from '../utils/logger';
 
 // Interface para entrada de ranking individual
 export interface RankingEntry {
@@ -72,12 +71,23 @@ class RankingService {
   private readonly QUIZ_STATS_KEY = 'kombinu_quiz_stats';
 
   private constructor() {
-    // Inicializa rankings vazios ou carrega dados existentes
-    this.rankings = this.carregarRankings();
+    // Inicializa rankings vazios e carrega dados em background
+    this.rankings = {
+      global: [],
+      semanal: [],
+      mensal: [],
+      categoria: {}
+    };
     
-    logger.info('RankingService inicializado', 'RankingService', {
-      totalUsuarios: this.rankings.global.length,
-      categorias: Object.keys(this.rankings.categoria).length
+    // Carrega dados em background
+    this.carregarRankings().then(rankings => {
+      this.rankings = rankings;
+      logger.info('RankingService dados carregados', 'RankingService', {
+        totalUsuarios: rankings.global.length,
+        categorias: Object.keys(rankings.categoria).length
+      });
+    }).catch(error => {
+      logger.error('Erro ao carregar rankings no construtor', 'RankingService', {}, error);
     });
   }
 
@@ -96,30 +106,34 @@ class RankingService {
    */
 
   /**
-   * Carrega rankings do localStorage ou inicializa vazios
+   * Carrega rankings da API ou localStorage
    */
-  private carregarRankings(): RankingData {
+  private async carregarRankings(): Promise<RankingData> {
     try {
+      // Temporariamente desabilitado - endpoint não existe na API
+      // const response = await axios.get(`${API_BASE_URL}/rankings`);
+      // const rankings = response.data;
+
+      // Fallback direto para localStorage
       const dadosSalvos = localStorage.getItem(this.STORAGE_KEY);
       if (dadosSalvos) {
         const rankings = JSON.parse(dadosSalvos);
-        
-        // Converte strings de data de volta para objetos Date
+
         rankings.global.forEach((entry: any) => {
           entry.ultimaAtividade = new Date(entry.ultimaAtividade);
         });
-        
+
         logger.debug('Rankings carregados do localStorage', 'RankingService', {
           totalEntries: rankings.global.length
         });
-        
+
         return rankings;
       }
     } catch (error) {
-      logger.error('Erro ao carregar rankings', 'RankingService', {}, error as Error);
+      logger.warning('Erro ao carregar rankings, usando estrutura vazia', 'RankingService', error);
     }
 
-    // Retorna estrutura vazia se não houver dados ou erro
+    // Retorna estrutura vazia se nada foi encontrado
     return {
       global: [],
       semanal: [],
@@ -567,5 +581,38 @@ class RankingService {
   }
 }
 
-// Exporta instância singleton
-export const rankingService = RankingService.getInstance();
+// Exporta função que retorna a instância singleton
+let _rankingService: RankingService | null = null;
+
+export const rankingService = {
+  get obterRankingGlobal() {
+    return RankingService.getInstance().obterRankingGlobal();
+  },
+  get obterRankingSemanal() {
+    return RankingService.getInstance().obterRankingSemanal();
+  },
+  get obterRankingMensal() {
+    return RankingService.getInstance().obterRankingMensal();
+  },
+  obterRankingPorCategoria: (categoria: string) => {
+    return RankingService.getInstance().obterRankingPorCategoria(categoria);
+  },
+  obterPosicaoUsuario: (usuarioId: string) => {
+    return RankingService.getInstance().obterPosicaoUsuario(usuarioId);
+  },
+  obterEntradaUsuario: (usuarioId: string) => {
+    return RankingService.getInstance().obterEntradaUsuario(usuarioId);
+  },
+  obterEstatisticasGerais: () => {
+    return RankingService.getInstance().obterEstatisticasGerais();
+  },
+  adicionarListener: (listener: any) => {
+    return RankingService.getInstance().adicionarListener(listener);
+  },
+  removerListener: (listener: any) => {
+    return RankingService.getInstance().removerListener(listener);
+  },
+  processarQuizCompletado: (usuarioId: string, quizId: string, categoria: string, pontos: number, acertos: number, total: number, tempoGasto: number) => {
+    return RankingService.getInstance().processarQuizCompletado(usuarioId, quizId, categoria, pontos, acertos, total, tempoGasto);
+  }
+};

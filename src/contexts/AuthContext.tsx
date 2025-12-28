@@ -5,11 +5,11 @@
  * fornecendo funcionalidades de login, logout e verificação de usuário logado.
  */
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Usuario } from '../types';
-import { authService } from '../services/authService';
-import { logger } from '../utils/logger';
+import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { useErrorHandler } from '../hooks/useErrorHandler';
+import { authService } from '../services/authService';
+import { Usuario } from '../types';
+import { logger } from '../utils/logger';
 
 // Interface que define o formato do contexto de autenticação
 interface AuthContextType {
@@ -55,6 +55,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const verificarUsuarioLogado = async () => {
       try {
         logger.debug('Verificando usuário logado no localStorage', 'AuthContext');
+        
+        // Verifica se localStorage está disponível
+        if (typeof Storage === 'undefined') {
+          logger.error('localStorage não está disponível neste navegador', 'AuthContext');
+          setLoading(false);
+          return;
+        }
+        
+        // Debug: verificar se há dados no localStorage
+        const localStorageData = localStorage.getItem('kombinu_usuario');
+        logger.debug('Dados brutos do localStorage:', 'AuthContext', { localStorageData });
         
         // Tenta recuperar usuário do localStorage
         const usuarioSalvo = authService.carregarUsuarioLogado();

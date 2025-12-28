@@ -3,8 +3,8 @@
  * Centraliza todas as operações de armazenamento local
  */
 
+import type { Conteudo, ProgressoUsuario, Usuario } from '../types';
 import { STORAGE_KEYS } from '../utils/constants';
-import type { Usuario, Conteudo, ProgressoUsuario } from '../types';
 
 /**
  * Classe para gerenciar operações do localStorage
@@ -31,10 +31,27 @@ class StorageService {
    */
   private carregar<T>(chave: string, valorPadrao: T): T {
     try {
+      // Verifica se localStorage está disponível
+      if (typeof Storage === 'undefined') {
+        console.warn('localStorage não está disponível');
+        return valorPadrao;
+      }
+      
       const dados = localStorage.getItem(chave);
-      return dados ? JSON.parse(dados) : valorPadrao;
+      if (dados === null) {
+        return valorPadrao;
+      }
+      
+      const parsed = JSON.parse(dados);
+      return parsed;
     } catch (error) {
-      console.error('Erro ao carregar do localStorage:', error);
+      console.error('Erro ao carregar do localStorage:', error, 'chave:', chave);
+      // Em caso de erro de parsing, remove o item corrompido
+      try {
+        localStorage.removeItem(chave);
+      } catch (removeError) {
+        console.error('Erro ao remover item corrompido do localStorage:', removeError);
+      }
       return valorPadrao;
     }
   }
@@ -53,11 +70,21 @@ class StorageService {
 
   // Métodos para usuários
   salvarUsuario(usuario: Usuario): void {
-    this.salvar(STORAGE_KEYS.USUARIO, usuario);
+    // Garante que dataCriacao é armazenada como string ISO
+    const userToSave = {
+      ...usuario,
+      dataCriacao: usuario.dataCriacao instanceof Date ? usuario.dataCriacao.toISOString() : usuario.dataCriacao
+    };
+    this.salvar(STORAGE_KEYS.USUARIO, userToSave);
   }
 
   carregarUsuario(): Usuario | null {
-    return this.carregar<Usuario | null>(STORAGE_KEYS.USUARIO, null);
+    const user = this.carregar<Usuario | null>(STORAGE_KEYS.USUARIO, null);
+    // Converte dataCriacao de volta para objeto Date
+    if (user && typeof user.dataCriacao === 'string') {
+      return { ...user, dataCriacao: new Date(user.dataCriacao) };
+    }
+    return user;
   }
 
   removerUsuario(): void {

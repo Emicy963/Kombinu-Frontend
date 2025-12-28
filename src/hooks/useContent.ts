@@ -3,7 +3,7 @@
  * Fornece interface simplificada para operações de conteúdo
  */
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { contentService } from '../services/contentService';
 import type { Conteudo, FormularioConteudo } from '../types';
 
@@ -22,19 +22,24 @@ export const useContent = () => {
    * Carrega conteúdos ao inicializar o hook
    */
   useEffect(() => {
-    carregarConteudos();
+    const carregarDados = async () => {
+      await carregarConteudos();
+    };
+    carregarDados();
   }, []);
 
   /**
    * Carrega todos os conteúdos
    */
-  const carregarConteudos = (): void => {
+  const carregarConteudos = async (): Promise<void> => {
     try {
       setCarregando(true);
-      const conteudosCarregados = contentService.carregarConteudos();
-      setConteudos(conteudosCarregados);
+      const conteudosCarregados = await contentService.carregarConteudos();
+      setConteudos(conteudosCarregados || []);
     } catch (error) {
       console.error('Erro ao carregar conteúdos:', error);
+      // Em caso de erro, garante que seja um array vazio
+      setConteudos([]);
     } finally {
       setCarregando(false);
     }
@@ -47,12 +52,12 @@ export const useContent = () => {
    * @param criadorNome - Nome do criador
    * @returns Conteúdo criado
    */
-  const criarConteudo = (
+  const criarConteudo = async (
     dadosConteudo: FormularioConteudo,
     criadorId: string,
     criadorNome: string
-  ): Conteudo => {
-    const novoConteudo = contentService.criarConteudo(dadosConteudo, criadorId, criadorNome);
+  ): Promise<Conteudo> => {
+    const novoConteudo = await contentService.criarConteudo(dadosConteudo, criadorId, criadorNome);
     
     // Atualiza estado local
     setConteudos(prev => [...prev, novoConteudo]);
@@ -66,8 +71,8 @@ export const useContent = () => {
    * @param dadosAtualizacao - Dados a serem atualizados
    * @returns Conteúdo atualizado ou undefined
    */
-  const atualizarConteudo = (id: string, dadosAtualizacao: Partial<Conteudo>): Conteudo | undefined => {
-    const conteudoAtualizado = contentService.atualizarConteudo(id, dadosAtualizacao);
+  const atualizarConteudo = async (id: string, dadosAtualizacao: Partial<Conteudo>): Promise<Conteudo | undefined> => {
+    const conteudoAtualizado = await contentService.atualizarConteudo(id, dadosAtualizacao);
     
     if (conteudoAtualizado) {
       // Atualiza estado local
@@ -86,8 +91,8 @@ export const useContent = () => {
    * @param id - ID do conteúdo
    * @returns Boolean indicando sucesso
    */
-  const deletarConteudo = (id: string): boolean => {
-    const sucesso = contentService.deletarConteudo(id);
+  const deletarConteudo = async (id: string): Promise<boolean> => {
+    const sucesso = await contentService.deletarConteudo(id);
     
     if (sucesso) {
       // Atualiza estado local
@@ -101,8 +106,8 @@ export const useContent = () => {
    * Incrementa visualização de um conteúdo
    * @param id - ID do conteúdo
    */
-  const incrementarVisualizacao = (id: string): void => {
-    contentService.incrementarVisualizacao(id);
+  const incrementarVisualizacao = async (id: string): Promise<void> => {
+    await contentService.incrementarVisualizacao(id);
     
     // Atualiza estado local
     setConteudos(prev => 
@@ -118,8 +123,8 @@ export const useContent = () => {
    * Toggle like em um conteúdo
    * @param id - ID do conteúdo
    */
-  const toggleLike = (id: string): void => {
-    contentService.toggleLike(id);
+  const toggleLike = async (id: string): Promise<void> => {
+    await contentService.toggleLike(id);
     
     // Atualiza estado local
     setConteudos(prev => 

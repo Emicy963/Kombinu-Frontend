@@ -3,9 +3,10 @@
  * Centraliza operações CRUD de conteúdos
  */
 
-import { storageService } from './storageService';
-import { gerarId } from '../utils/helpers';
+import axios from 'axios';
 import type { Conteudo, FormularioConteudo } from '../types';
+import { API_BASE_URL } from '../utils/constants';
+import { storageService } from './storageService';
 
 /**
  * Classe para gerenciar operações de conteúdo
@@ -15,8 +16,19 @@ class ContentService {
    * Carrega todos os conteúdos
    * @returns Array de conteúdos
    */
-  carregarConteudos(): Conteudo[] {
-    return storageService.carregarConteudos();
+  async carregarConteudos(): Promise<Conteudo[]> {
+    try {
+      // Temporariamente desabilitado - endpoint não existe na API
+      // const response = await axios.get(`${API_BASE_URL}/contents`);
+      // return response.data;
+
+      // Fallback direto para localStorage
+      return storageService.carregarConteudos();
+    } catch (error) {
+      console.error('Erro ao carregar conteúdos:', error);
+      // Fallback para localStorage se a API falhar
+      return storageService.carregarConteudos();
+    }
   }
 
   /**
@@ -24,9 +36,14 @@ class ContentService {
    * @param id - ID do conteúdo
    * @returns Conteúdo encontrado ou undefined
    */
-  obterConteudo(id: string): Conteudo | undefined {
-    const conteudos = this.carregarConteudos();
-    return conteudos.find(conteudo => conteudo.id === id);
+  async obterConteudo(id: string): Promise<Conteudo | undefined> {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/contents/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao obter conteúdo:', error);
+      return undefined;
+    }
   }
 
   /**
@@ -34,18 +51,28 @@ class ContentService {
    * @param criadorId - ID do criador
    * @returns Array de conteúdos do criador
    */
-  obterConteudosPorCriador(criadorId: string): Conteudo[] {
-    const conteudos = this.carregarConteudos();
-    return conteudos.filter(conteudo => conteudo.criadorId === criadorId);
+  async obterConteudosPorCriador(criadorId: string): Promise<Conteudo[]> {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/contents?creatorId=${criadorId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao obter conteúdos por criador:', error);
+      return [];
+    }
   }
 
   /**
    * Busca apenas conteúdos públicos
    * @returns Array de conteúdos públicos
    */
-  obterConteudosPublicos(): Conteudo[] {
-    const conteudos = this.carregarConteudos();
-    return conteudos.filter(conteudo => conteudo.publico);
+  async obterConteudosPublicos(): Promise<Conteudo[]> {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/contents?public=true`);
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao obter conteúdos públicos:', error);
+      return [];
+    }
   }
 
   /**
@@ -55,26 +82,22 @@ class ContentService {
    * @param criadorNome - Nome do criador
    * @returns Conteúdo criado
    */
-  criarConteudo(
+  async criarConteudo(
     dadosConteudo: FormularioConteudo, 
     criadorId: string, 
     criadorNome: string
-  ): Conteudo {
-    const novoConteudo: Conteudo = {
-      ...dadosConteudo,
-      id: gerarId(),
-      criadorId,
-      criadorNome,
-      visualizacoes: 0,
-      likes: 0,
-      dataCriacao: new Date()
-    };
-
-    const conteudos = this.carregarConteudos();
-    conteudos.push(novoConteudo);
-    storageService.salvarConteudos(conteudos);
-
-    return novoConteudo;
+  ): Promise<Conteudo> {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/contents`, {
+        ...dadosConteudo,
+        criadorId,
+        criadorNome
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao criar conteúdo:', error);
+      throw error;
+    }
   }
 
   /**
@@ -83,18 +106,14 @@ class ContentService {
    * @param dadosAtualizacao - Dados a serem atualizados
    * @returns Conteúdo atualizado ou undefined se não encontrado
    */
-  atualizarConteudo(id: string, dadosAtualizacao: Partial<Conteudo>): Conteudo | undefined {
-    const conteudos = this.carregarConteudos();
-    const index = conteudos.findIndex(conteudo => conteudo.id === id);
-
-    if (index === -1) {
+  async atualizarConteudo(id: string, dadosAtualizacao: Partial<Conteudo>): Promise<Conteudo | undefined> {
+    try {
+      const response = await axios.put(`${API_BASE_URL}/contents/${id}`, dadosAtualizacao);
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao atualizar conteúdo:', error);
       return undefined;
     }
-
-    conteudos[index] = { ...conteudos[index], ...dadosAtualizacao };
-    storageService.salvarConteudos(conteudos);
-
-    return conteudos[index];
   }
 
   /**
@@ -102,29 +121,25 @@ class ContentService {
    * @param id - ID do conteúdo a ser removido
    * @returns Boolean indicando sucesso da operação
    */
-  deletarConteudo(id: string): boolean {
-    const conteudos = this.carregarConteudos();
-    const conteudosFiltrados = conteudos.filter(conteudo => conteudo.id !== id);
-
-    if (conteudosFiltrados.length === conteudos.length) {
-      return false; // Conteúdo não encontrado
+  async deletarConteudo(id: string): Promise<boolean> {
+    try {
+      await axios.delete(`${API_BASE_URL}/contents/${id}`);
+      return true;
+    } catch (error) {
+      console.error('Erro ao deletar conteúdo:', error);
+      return false;
     }
-
-    storageService.salvarConteudos(conteudosFiltrados);
-    return true;
   }
 
   /**
    * Incrementa o contador de visualizações
    * @param id - ID do conteúdo
    */
-  incrementarVisualizacao(id: string): void {
-    const conteudos = this.carregarConteudos();
-    const index = conteudos.findIndex(conteudo => conteudo.id === id);
-
-    if (index !== -1) {
-      conteudos[index].visualizacoes += 1;
-      storageService.salvarConteudos(conteudos);
+  async incrementarVisualizacao(id: string): Promise<void> {
+    try {
+      await axios.put(`${API_BASE_URL}/contents/${id}/view`);
+    } catch (error) {
+      console.error('Erro ao incrementar visualização:', error);
     }
   }
 
@@ -132,13 +147,11 @@ class ContentService {
    * Incrementa o contador de likes
    * @param id - ID do conteúdo
    */
-  toggleLike(id: string): void {
-    const conteudos = this.carregarConteudos();
-    const index = conteudos.findIndex(conteudo => conteudo.id === id);
-
-    if (index !== -1) {
-      conteudos[index].likes += 1;
-      storageService.salvarConteudos(conteudos);
+  async toggleLike(id: string): Promise<void> {
+    try {
+      await axios.put(`${API_BASE_URL}/contents/${id}/like`);
+    } catch (error) {
+      console.error('Erro ao dar like:', error);
     }
   }
 
