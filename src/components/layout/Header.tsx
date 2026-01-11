@@ -54,7 +54,7 @@ export const Header: React.FC = () => {
   // Links de navegação baseados no tipo de usuário
   const navigationLinks = [
     {
-      to: usuario.tipo === 'criador' ? '/dashboard-criador' : '/dashboard-aprendiz',
+      to: usuario.tipo === 'criador' ? '/dashboard/creator' : '/dashboard/learner',
       icon: Home,
       label: 'Dashboard',
       show: true

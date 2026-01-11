@@ -4,16 +4,35 @@
  */
 
 import React from 'react';
-import { Trophy, Medal, Award, TrendingUp, TrendingDown, Users, Calendar, Globe } from 'lucide-react';
+import { 
+  Trophy, 
+  Medal, 
+  Award, 
+  TrendingUp, 
+  TrendingDown, 
+  Users, 
+  Calendar, 
+  Globe, 
+  Crown, 
+  ArrowUp, 
+  ArrowDown, 
+  Minus 
+} from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { useRanking, useRankingStats } from '../hooks/useRanking';
 import { logger } from '../utils/logger';
 import { useAuth } from '../contexts/AuthContext';
 import { useEffect, useState } from 'react';
-import { Crown } from 'lucide-react';
-
 type PeriodoRanking = 'global' | 'semanal' | 'mensal';
+
+interface RankingUser {
+  id: string;
+  name: string;
+  points: number;
+  trend: 'up' | 'down' | 'same';
+  avatar?: string;
+}
 
 /**
  * Componente principal da página de Rankings
