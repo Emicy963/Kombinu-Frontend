@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Logo } from '../ui/Logo';
+import { useTheme } from '../../contexts/ThemeContext';
 import { 
   LogOut, 
   User, 
@@ -16,7 +17,9 @@ import {
   Menu, 
   X,
   Plus,
-  BarChart3
+  BarChart3,
+  Moon,
+  Sun
 } from 'lucide-react';
 
 /**
@@ -24,6 +27,7 @@ import {
  */
 export const Header: React.FC = () => {
   const { usuario, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -56,13 +60,13 @@ export const Header: React.FC = () => {
       show: true
     },
     {
-      to: '/marketplace',
+      to: '/courses',
       icon: BookOpen,
       label: 'Marketplace',
       show: true
     },
     {
-      to: '/criar-conteudo',
+      to: '/courses/create',
       icon: Plus,
       label: 'Criar',
       show: usuario.tipo === 'criador'
@@ -144,6 +148,15 @@ export const Header: React.FC = () => {
               </div>
             </div>
 
+            {/* Dark Mode Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 dark-text-muted hover:text-blue-600 hover:bg-gray-100 rounded-lg transition-all duration-200 dark:hover:bg-dark-bg-hover dark:hover:text-dark-interactive-primary"
+              aria-label="Alternar tema"
+            >
+              {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button> 
+
             {/* Botão de logout - Desktop */}
             <button
               onClick={handleLogout}
@@ -177,6 +190,9 @@ export const Header: React.FC = () => {
                 <User className="w-6 h-6 text-white" />
               </div>
               <div className="flex-1">
+                <Link to="/courses" className="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Marcas</Link>
+                <Link to="/courses" className="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Categorias</Link>
+                {/* <Link to="/ranking" className="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Ranking</Link> */}
                 <p className="font-semibold dark-text-primary font-montserrat">{usuario.nome}</p>
                 <div className="flex items-center space-x-2 text-sm dark-text-muted font-lato">
                   <span className="flex items-center space-x-1">

@@ -15,12 +15,12 @@ import PainelAdmin from '../pages/PainelAdmin';
 export const router = createBrowserRouter([
   {
     path: '/',
+    element: <LandingPage />,
+  },
+  {
+    path: '/',
     element: <BaseLayout />,
     children: [
-      {
-        index: true,
-        element: <LandingPage />,
-      },
       {
         path: 'login',
         element: <Login />,
