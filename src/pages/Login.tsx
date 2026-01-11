@@ -21,7 +21,12 @@ export default function Login() {
     try {
       const sucesso = await login(email, senha);
       if (sucesso) {
-        navigate('/marketplace');
+        if (login.name === 'criador') {
+           navigate('/dashboard/creator');
+        } else {
+           // Fallback default info
+           navigate('/dashboard/learner');
+        }
       } else {
         setErro('Email ou senha incorretos');
       }

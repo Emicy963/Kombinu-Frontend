@@ -47,7 +47,7 @@ export default function Register() {
     try {
       const sucesso = await register({ nome, email, senha, tipo });
       if (sucesso) {
-        navigate(tipo === 'criador' ? '/dashboard-criador' : '/dashboard-aprendiz');
+        navigate(tipo === 'criador' ? '/dashboard/creator' : '/dashboard/learner');
       } else {
         // Usar erro específico do contexto se disponível
         if (authError) {

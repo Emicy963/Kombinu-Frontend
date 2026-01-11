@@ -25,37 +25,32 @@ class AuthService {
       logger.debug('Iniciando processo de login', 'AuthService.login', { email: dadosLogin.email });
 
       // 1. Obter Token (Login)
-      // O backend espera 'username' e 'password', mas o USERNAME_FIELD é email.
-      // Enviamos o email no campo 'username' para garantir compatibilidade com DRF Token View.
+      // O backend espera 'email' e 'password'.
       const loginResponse = await axios.post(`${API_URL}/login/`, {
-        username: dadosLogin.email, // Importante: DRF espera key 'username' por padrão
+        email: dadosLogin.email,
         password: dadosLogin.senha
       });
 
-      const { access, refresh } = loginResponse.data;
+      // DRF SimpleJWT returns access_token and refresh_token
+      const { access_token, refresh_token, user: usuarioBackend } = loginResponse.data;
 
-      // Salvar tokens (idealmente em HttpOnly cookies ou storage seguro, aqui simplificamos)
-      localStorage.setItem('accessToken', access);
-      localStorage.setItem('refreshToken', refresh);
+      // Salvar tokens
+      localStorage.setItem('accessToken', access_token);
+      localStorage.setItem('refreshToken', refresh_token);
 
       // Configurar header padrão para próximas requisições
-      axios.defaults.headers.common['Authorization'] = `Bearer ${access}`;
+      axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
 
-      // 2. Obter Perfil do Usuário
-      const profileResponse = await axios.get(`${API_URL}/profile/`);
-      const usuarioBackend = profileResponse.data;
-
-      // Mapear resposta do backend para interface Usuario do frontend
-      // Backend retorna: { id, email, user_type }
-      // Precisamos adaptar para interface Usuario
+      // 2. Mapear resposta do backend para interface Usuario do frontend
+      // O login já retorna os dados do usuário, não é necessário chamar /profile
       const usuario: Usuario = {
         id: String(usuarioBackend.id),
         nome: usuarioBackend.first_name || usuarioBackend.email.split('@')[0], // Fallback para nome
         email: usuarioBackend.email,
         tipo: usuarioBackend.user_type === 'creator' ? 'criador' : 'aprendiz',
-        pontos: 0, // Backend v2.0 basic auth might not return points yet in profile
-        nivel: 1, // Fallback
-        dataCriacao: new Date(), // Fallback
+        pontos: 0,
+        nivel: 1,
+        dataCriacao: new Date(),
       };
 
       logger.info(
@@ -64,7 +59,7 @@ class AuthService {
         { userId: usuario.id, userType: usuario.tipo }
       );
 
-      // Salva usuário logado no localStorage (para persistência da sessão no frontend)
+      // Salva usuário logado no localStorage
       storageService.salvarUsuario(usuario);
 
       return usuario;
