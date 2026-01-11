@@ -68,7 +68,6 @@ export default function VisualizarConteudo() {
   if (!conteudo) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
-        <Header />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
              <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Conteúdo não encontrado</h1>
              <Link to="/courses" className="text-blue-600 dark:text-blue-400 hover:underline">Voltar para Cursos</Link>
@@ -79,7 +78,6 @@ export default function VisualizarConteudo() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
-      <Header />
       
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Navegação */}

@@ -9,6 +9,9 @@ import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { useRanking, useRankingStats } from '../hooks/useRanking';
 import { logger } from '../utils/logger';
+import { useAuth } from '../contexts/AuthContext';
+import { useEffect, useState } from 'react';
+import { Crown } from 'lucide-react';
 
 type PeriodoRanking = 'global' | 'semanal' | 'mensal';
 
@@ -130,6 +133,7 @@ export default function Ranking() {
         </Button>
       ))}
     </div>
+  );
   const { usuario } = useAuth();
   // const { obterRanking } = useData();
   const [rankingData, setRankingData] = useState<RankingUser[]>([]);
@@ -197,9 +201,8 @@ export default function Ranking() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
-      <Header />
       
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
             Ranking Global 🏆

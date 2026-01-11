@@ -6,15 +6,15 @@ import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { 
-  Trophy, 
-  Users, 
-  Star, 
-  Zap, 
-  Globe, 
-  Play, 
-  CheckCircle, 
-  ArrowRight, 
+import {
+  Trophy,
+  Users,
+  Star,
+  Zap,
+  Globe,
+  Play,
+  CheckCircle,
+  ArrowRight,
   Sparkles,
   BookOpen,
   Target,

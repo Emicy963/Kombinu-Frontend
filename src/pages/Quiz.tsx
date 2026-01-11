@@ -145,7 +145,6 @@ export default function Quiz() {
     
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
-        <Header />
         <div className="max-w-3xl mx-auto px-4 py-12">
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 text-center border border-gray-100 dark:border-gray-700">
             <div className="mb-6">
@@ -195,7 +194,6 @@ export default function Quiz() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
-      <Header />
       
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Quiz Header */}
