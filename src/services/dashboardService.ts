@@ -8,7 +8,7 @@ export interface DashboardStats {
 }
 
 export interface EnrolledCourse {
-  id: number;
+  id: string | number;
   title: string;
   progress: number;
   lastAccessed: string;
@@ -17,53 +17,43 @@ export interface EnrolledCourse {
 
 export const dashboardService = {
   getLearnerStats: async (): Promise<DashboardStats> => {
-    // TODO: Connect to real backend endpoint when available
-    // const response = await api.get('/dashboard/learner/stats');
-    // return response.data;
-    
-    // Mock data for now
-    return {
-      coursesCompleted: 5,
-      totalPoints: 1250,
-      currentLevel: 12,
-      quizzesTaken: 15
-    };
+    try {
+      const response = await api.get('/dashboard/learner/stats/');
+      return response.data;
+    } catch (error) {
+       console.warn("Failed to fetch learner stats, using fallback", error);
+       // Fallback mock data if endpoint fails (or for dev before backend is ready)
+       return {
+        coursesCompleted: 0,
+        totalPoints: 0,
+        currentLevel: 1,
+        quizzesTaken: 0
+      };
+    }
   },
 
   getEnrolledCourses: async (): Promise<EnrolledCourse[]> => {
-    // TODO: Connect to real backend
-    return [
-      {
-        id: 1,
-        title: "Introdução à Programação Python",
-        progress: 75,
-        lastAccessed: "2024-03-10",
-        thumbnail: "https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=500&auto=format&fit=crop&q=60"
-      },
-      {
-        id: 2,
-        title: "Marketing Digital para Iniciantes",
-        progress: 30,
-        lastAccessed: "2024-03-08",
-        thumbnail: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500&auto=format&fit=crop&q=60"
-      },
-      {
-        id: 3,
-        title: "Gestão Financeira Pessoal",
-        progress: 10,
-        lastAccessed: "2024-03-05",
-        thumbnail: "https://images.unsplash.com/photo-1554224155-98406858d0cb?w=500&auto=format&fit=crop&q=60"
-      }
-    ];
+    try {
+        const response = await api.get('/dashboard/learner/courses/');
+        return response.data;
+    } catch (error) {
+        console.warn("Failed to fetch courses, using fallback", error);
+        return [];
+    }
   },
 
   getCreatorStats: async () => {
-    // Mock data
-    return {
-      totalStudents: 150,
-      totalCourses: 3,
-      averageRating: 4.8,
-      totalRevenue: 250000 // KZ
-    };
+    try {
+        const response = await api.get('/dashboard/creator/stats/');
+        return response.data;
+    } catch (error) {
+         console.warn("Failed to fetch creator stats, using fallback", error);
+         return {
+            totalStudents: 0,
+            totalCourses: 0,
+            averageRating: 0,
+            totalRevenue: 0
+        };
+    }
   }
 };
