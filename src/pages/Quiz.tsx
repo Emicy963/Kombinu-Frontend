@@ -1,129 +1,87 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Header } from '../components/layout/Header';
 import { Clock, CheckCircle, AlertCircle, ArrowLeft } from 'lucide-react';
-
-interface Question {
-  id: string;
-  question: string;
-  options: string[];
-  correctAnswer: number;
-}
+import { quizService, QuizData, QuizQuestion, QuizResult } from '../services/quizService';
 
 export default function Quiz() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   
-  const [questions, setQuestions] = useState<Question[]>([]);
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [selectedOption, setSelectedOption] = useState<number | null>(null);
-  const [score, setScore] = useState(0);
-  const [showResults, setShowResults] = useState(false);
+  const [quiz, setQuiz] = useState<QuizData | null>(null);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
+  const [answers, setAnswers] = useState<Record<string, string>>({}); // valid questionId -> optionId
+  const [result, setResult] = useState<QuizResult | null>(null);
   const [loading, setLoading] = useState(true);
-  const [timeLeft, setTimeLeft] = useState(600); // 10 minutes
+  const [submitting, setSubmitting] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(0); 
 
   useEffect(() => {
-    // Mock fetching quiz data
     const fetchQuiz = async () => {
+      if (!id) return;
+      try {
         setLoading(true);
-        // Simulate API call delay
-        setTimeout(() => {
-             setQuestions([
-                {
-                    id: '1',
-                    question: "Qual é a principal função do React?",
-                    options: [
-                        "Gerenciar bancos de dados",
-                        "Construir interfaces de usuário",
-                        "Criar APIs",
-                        "Gerenciar servidores"
-                    ],
-                    correctAnswer: 1
-                },
-                {
-                    id: '2',
-                    question: "O que é JSX?",
-                    options: [
-                        "Uma linguagem de banco de dados",
-                        "Uma extensão de sintaxe para JavaScript",
-                        "Um framework CSS",
-                        "Uma biblioteca de testes"
-                    ],
-                    correctAnswer: 1
-                },
-                {
-                    id: '3',
-                    question: "Como passamos dados para componentes filhos?",
-                    options: [
-                        "State",
-                        "Props",
-                        "Context",
-                        "Hooks"
-                    ],
-                    correctAnswer: 1
-                },
-                 {
-                    id: '4',
-                    question: "Qual hook é usado para gerenciar estado?",
-                    options: [
-                        "useEffect",
-                        "useContext",
-                        "useState",
-                        "useReducer"
-                    ],
-                    correctAnswer: 2
-                },
-            ]);
-            setLoading(false);
-        }, 1000);
-    }
+        const data = await quizService.getQuiz(id);
+        setQuiz(data);
+        setTimeLeft(data.timeLimit * 60); // timeLimit is in minutes
+      } catch (error) {
+        console.error("Failed to load quiz", error);
+        // Fallback for demo/error handling (or redirect)
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchQuiz();
   }, [id]);
 
   useEffect(() => {
-    if (timeLeft > 0 && !showResults && !loading) {
+    if (timeLeft > 0 && !result && !loading) {
       const timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
       return () => clearInterval(timer);
-    } else if (timeLeft === 0 && !showResults && !loading) {
-      finishQuiz();
+    } else if (timeLeft === 0 && !result && !loading && quiz) {
+      handleSubmitQuiz(); // Time up!
     }
-  }, [timeLeft, showResults, loading]);
+  }, [timeLeft, result, loading, quiz]);
 
-  const handleOptionSelect = (index: number) => {
-    setSelectedOption(index);
+  const handleOptionSelect = (optionId: string) => {
+    setSelectedOptionId(optionId);
   };
 
   const handleNextQuestion = () => {
-    if (selectedOption !== null) {
-      if (selectedOption === questions[currentQuestion].correctAnswer) {
-        setScore(score + 1);
-      }
-      
-      if (currentQuestion < questions.length - 1) {
-        setCurrentQuestion(currentQuestion + 1);
-        setSelectedOption(null);
-      } else {
-        // We need to calculate the final score including the last question BEFORE setting showResults
-        // But since state updates are async, a common pattern is to just call finishQuiz logic.
-        // However, we just updated the score state potentially. 
-        // Better logic: Calculate final score in a temporary variable or effect.
-        // For simplicity here, we assume the score update for the last question happens. 
-        // Actually, React state updates are batched. 
-        // Let's pass the final result logic to finishQuiz or handle it here.
-        
-        // Correct approach for sync logic:
-        const isCorrect = selectedOption === questions[currentQuestion].correctAnswer;
-        const finalScore = score + (isCorrect ? 1 : 0);
-        setScore(finalScore);
-        
-        finishQuiz();
-      }
+    if (!quiz || selectedOptionId === null) return;
+
+    const currentQuestion = quiz.questions[currentQuestionIndex];
+    
+    // Save answer
+    setAnswers(prev => ({
+      ...prev,
+      [currentQuestion.id]: selectedOptionId
+    }));
+
+    if (currentQuestionIndex < quiz.questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setSelectedOptionId(null);
+    } else {
+      // It was the last question, submit
+      handleSubmitQuiz({ ...answers, [currentQuestion.id]: selectedOptionId });
     }
   };
 
-  const finishQuiz = () => {
-    setShowResults(true);
-    // Future: Call API to save progress
+  const handleSubmitQuiz = async (finalAnswers?: Record<string, string>) => {
+    if (!quiz || !id) return;
+    
+    const answersToSubmit = finalAnswers || answers;
+    
+    try {
+      setSubmitting(true);
+      const quizResult = await quizService.submitQuiz(id, answersToSubmit);
+      setResult(quizResult);
+    } catch (error) {
+      console.error("Failed to submit quiz", error);
+      // Handle error (maybe show toast)
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const formatTime = (seconds: number) => {
@@ -140,15 +98,29 @@ export default function Quiz() {
      );
   }
 
-  if (showResults) {
-    const percentage = (score / questions.length) * 100;
+  if (!quiz) {
+    return (
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center flex-col">
+            <h2 className="text-xl text-gray-800 dark:text-white mb-4">Quiz não encontrado.</h2>
+            <button onClick={() => navigate(-1)} className="text-blue-600 hover:underline">Voltar</button>
+        </div>
+    );
+  }
+
+  if (result) {
+    const percentage = (result.score / result.totalPoints) * 100; // Assuming totalPoints is sum of points
+    // Or if backend returns percentage directly/score as count. 
+    // Let's assume score is points earned and totalPoints includes max possible.
     
+    // Fallback if backend returns simple count
+    const displayPercentage = result.totalPoints > 0 ? (result.score / result.totalPoints) * 100 : 0;
+
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
         <div className="max-w-3xl mx-auto px-4 py-12">
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 text-center border border-gray-100 dark:border-gray-700">
             <div className="mb-6">
-              {percentage >= 70 ? (
+              {displayPercentage >= 70 ? (
                 <CheckCircle className="w-20 h-20 text-green-500 mx-auto" />
               ) : (
                 <AlertCircle className="w-20 h-20 text-yellow-500 mx-auto" />
@@ -156,19 +128,22 @@ export default function Quiz() {
             </div>
             
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-              {percentage >= 70 ? 'Parabéns!' : 'Continue Tentando!'}
+              {displayPercentage >= 70 ? 'Parabéns!' : 'Continue Tentando!'}
             </h2>
             
             <p className="text-gray-600 dark:text-gray-400 mb-8 text-lg">
-              Você acertou <span className="font-bold text-gray-900 dark:text-white">{score}</span> de <span className="font-bold text-gray-900 dark:text-white">{questions.length}</span> questões.
+              Você fez <span className="font-bold text-gray-900 dark:text-white">{result.score}</span> pontos.
+              <br/>
+              Acertou <span className="font-bold text-green-600">{result.correctAnswers}</span> questões.
+               {result['xp earned'] > 0 && <span className="block mt-2 text-sm text-blue-500">+{result['xp earned']} XP ganhos!</span>}
             </p>
             
             <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 mb-8">
               <div 
                 className={`h-4 rounded-full transition-all duration-1000 ${
-                  percentage >= 70 ? 'bg-green-500' : 'bg-yellow-500'
+                  displayPercentage >= 70 ? 'bg-green-500' : 'bg-yellow-500'
                 }`}
-                style={{ width: `${percentage}%` }}
+                style={{ width: `${displayPercentage}%` }}
               ></div>
             </div>
 
@@ -191,6 +166,8 @@ export default function Quiz() {
       </div>
     );
   }
+
+  const currentQuestion = quiz.questions[currentQuestionIndex];
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
@@ -220,7 +197,7 @@ export default function Quiz() {
           <div className="bg-gray-200 dark:bg-gray-700 h-2">
             <div 
               className="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 transition-all duration-300"
-              style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
+              style={{ width: `${((currentQuestionIndex + 1) / quiz.questions.length) * 100}%` }}
             ></div>
           </div>
 
@@ -228,41 +205,41 @@ export default function Quiz() {
             {/* Question Header */}
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-xl text-gray-500 dark:text-gray-400 font-medium">
-                Questão {currentQuestion + 1} de {questions.length}
+                Questão {currentQuestionIndex + 1} de {quiz.questions.length}
               </h2>
             </div>
 
             {/* Question Text */}
             <div className="mb-8">
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 leading-relaxed">
-                {questions[currentQuestion].question}
+                {currentQuestion.text}
               </h3>
 
               {/* Options */}
               <div className="space-y-4">
-                {questions[currentQuestion].options.map((option, index) => (
+                {currentQuestion.options.map((option) => (
                   <button
-                    key={index}
-                    onClick={() => handleOptionSelect(index)}
+                    key={option.id}
+                    onClick={() => handleOptionSelect(option.id)}
                     className={`w-full p-4 text-left rounded-xl border-2 transition-all duration-200 group ${
-                      selectedOption === index
+                      selectedOptionId === option.id
                         ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-md'
                         : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 hover:border-blue-300 dark:hover:border-blue-700 hover:bg-white dark:hover:bg-gray-800'
                     }`}
                   >
                     <div className="flex items-center space-x-3">
                       <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
-                        selectedOption === index
+                        selectedOptionId === option.id
                           ? 'border-blue-500 bg-blue-500'
                           : 'border-gray-300 dark:border-gray-600 group-hover:border-blue-400'
                       }`}>
-                        {selectedOption === index && (
+                        {selectedOptionId === option.id && (
                           <div className="w-2.5 h-2.5 bg-white rounded-full"></div>
                         )}
                       </div>
                       <span className={`text-lg font-medium ${
-                         selectedOption === index ? 'text-blue-900 dark:text-blue-100' : 'text-gray-700 dark:text-gray-300'
-                      }`}>{option}</span>
+                         selectedOptionId === option.id ? 'text-blue-900 dark:text-blue-100' : 'text-gray-700 dark:text-gray-300'
+                      }`}>{option.text}</span>
                     </div>
                   </button>
                 ))}
@@ -273,10 +250,10 @@ export default function Quiz() {
             <div className="flex justify-end pt-4 border-t border-gray-100 dark:border-gray-700">
               <button
                 onClick={handleNextQuestion}
-                disabled={selectedOption === null}
+                disabled={selectedOptionId === null || submitting}
                 className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none shadow-lg"
               >
-                {currentQuestion < questions.length - 1 ? 'Próxima Pergunta' : 'Finalizar Quiz'}
+                {submitting ? 'Enviando...' : (currentQuestionIndex < quiz.questions.length - 1 ? 'Próxima Pergunta' : 'Finalizar Quiz')}
               </button>
             </div>
           </div>

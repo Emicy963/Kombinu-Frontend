@@ -15,6 +15,7 @@
 
 import type { Usuario } from '../types';
 import { logger } from '../utils/logger';
+import { api } from './api';
 
 // Interface para entrada de ranking individual
 export interface RankingEntry {
@@ -110,11 +111,41 @@ class RankingService {
    */
   private async carregarRankings(): Promise<RankingData> {
     try {
-      // Temporariamente desabilitado - endpoint não existe na API
-      // const response = await axios.get(`${API_BASE_URL}/rankings`);
-      // const rankings = response.data;
+      const response = await api.get('/rankings/global/');
+      const globalRankings = response.data;
+      
+      // Ensure dates are parsed
+      globalRankings.forEach((entry: any) => {
+        if (entry.ultimaAtividade) {
+            entry.ultimaAtividade = new Date(entry.ultimaAtividade);
+        }
+      });
 
-      // Fallback direto para localStorage
+       // Initialize full structure
+       const rankings: RankingData = {
+          global: globalRankings,
+          semanal: [],
+          mensal: [],
+          categoria: {}
+       };
+       
+       // Derive other lists
+       const agora = new Date();
+       const umaSemanaAtras = new Date(agora.getTime() - 7 * 24 * 60 * 60 * 1000);
+       const umMesAtras = new Date(agora.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+       rankings.semanal = globalRankings.filter((e: any) => new Date(e.ultimaAtividade) >= umaSemanaAtras).slice(0, 50);
+       rankings.mensal = globalRankings.filter((e: any) => new Date(e.ultimaAtividade) >= umMesAtras).slice(0, 100);
+
+      logger.debug('Rankings carregados da API', 'RankingService', {
+          totalEntries: rankings.global.length
+      });
+      return rankings;
+
+    } catch (error) {
+      logger.warning('Erro ao carregar rankings da API, tentando localStorage', 'RankingService', error);
+      
+      // Fallback to localStorage
       const dadosSalvos = localStorage.getItem(this.STORAGE_KEY);
       if (dadosSalvos) {
         const rankings = JSON.parse(dadosSalvos);
@@ -122,18 +153,11 @@ class RankingService {
         rankings.global.forEach((entry: any) => {
           entry.ultimaAtividade = new Date(entry.ultimaAtividade);
         });
-
-        logger.debug('Rankings carregados do localStorage', 'RankingService', {
-          totalEntries: rankings.global.length
-        });
-
         return rankings;
       }
-    } catch (error) {
-      logger.warning('Erro ao carregar rankings, usando estrutura vazia', 'RankingService', error);
     }
 
-    // Retorna estrutura vazia se nada foi encontrado
+    // Default empty
     return {
       global: [],
       semanal: [],
