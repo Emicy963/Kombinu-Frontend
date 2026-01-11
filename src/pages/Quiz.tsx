@@ -1,211 +1,164 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Header } from '../components/layout/Header';
-import { useAuth } from '../contexts/AuthContext';
-import { useData } from '../contexts/DataContext';
-import { Clock, CheckCircle, XCircle, ArrowLeft, Trophy, Star } from 'lucide-react';
+import { Clock, CheckCircle, AlertCircle, ArrowLeft } from 'lucide-react';
+import { quizService, QuizData, QuizQuestion, QuizResult } from '../services/quizService';
 
 export default function Quiz() {
   const { id } = useParams<{ id: string }>();
-  const { usuario, atualizarPontos } = useAuth();
-  const { obterConteudo, salvarProgresso, obterProgresso, atualizarRankingAposQuiz } = useData();
   const navigate = useNavigate();
   
-  const [conteudo, setConteudo] = useState(obterConteudo(id || ''));
-  const [perguntaAtual, setPerguntaAtual] = useState(0);
-  const [respostas, setRespostas] = useState<number[]>([]);
-  const [respostaSelecionada, setRespostaSelecionada] = useState<number | null>(null);
-  const [mostrarResultado, setMostrarResultado] = useState(false);
-  const [quizConcluido, setQuizConcluido] = useState(false);
-  const [pontuacao, setPontuacao] = useState(0);
-  const [tempoRestante, setTempoRestante] = useState(30);
-  const [inicioTempo] = useState(Date.now());
+  const [quiz, setQuiz] = useState<QuizData | null>(null);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
+  const [answers, setAnswers] = useState<Record<string, string>>({}); // valid questionId -> optionId
+  const [result, setResult] = useState<QuizResult | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(0); 
 
   useEffect(() => {
-    if (!conteudo || conteudo.tipo !== 'quiz' || !conteudo.quiz) {
-      navigate('/marketplace');
-      return;
-    }
-
-    // Timer para cada pergunta
-    const timer = setInterval(() => {
-      setTempoRestante(prev => {
-        if (prev <= 1) {
-          // Tempo esgotado, avançar para próxima pergunta
-          handleProximaPergunta();
-          return 30;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [perguntaAtual, conteudo]);
-
-  const handleSelecionarResposta = (opcaoIndex: number) => {
-    setRespostaSelecionada(opcaoIndex);
-  };
-
-  const handleProximaPergunta = () => {
-    if (!conteudo?.quiz) return;
-
-    const novasRespostas = [...respostas];
-    novasRespostas[perguntaAtual] = respostaSelecionada ?? -1;
-    setRespostas(novasRespostas);
-
-    if (perguntaAtual < conteudo.quiz.length - 1) {
-      setPerguntaAtual(perguntaAtual + 1);
-      setRespostaSelecionada(null);
-      setTempoRestante(30);
-    } else {
-      // Quiz concluído
-      finalizarQuiz(novasRespostas);
-    }
-  };
-
-  const finalizarQuiz = (respostasFinais: number[]) => {
-    if (!conteudo?.quiz || !usuario) return;
-
-    // Calcular tempo gasto primeiro
-    const tempoGasto = Math.floor((Date.now() - inicioTempo) / 1000);
-
-    let pontos = 0;
-    let acertos = 0;
-
-    respostasFinais.forEach((resposta, index) => {
-      if (resposta === conteudo.quiz![index].respostaCerta) {
-        pontos += conteudo.quiz![index].pontos;
-        acertos++;
+    const fetchQuiz = async () => {
+      if (!id) return;
+      try {
+        setLoading(true);
+        const data = await quizService.getQuiz(id);
+        setQuiz(data);
+        setTimeLeft(data.timeLimit * 60); // timeLimit is in minutes
+      } catch (error) {
+        console.error("Failed to load quiz", error);
+        // Fallback for demo/error handling (or redirect)
+      } finally {
+        setLoading(false);
       }
-    });
-
-    setPontuacao(pontos);
-    setQuizConcluido(true);
-
-    // Atualizar pontos do usuário
-    atualizarPontos(pontos);
-
-    // Integração com sistema de rankings dinâmicos
-    if (usuario && conteudo) {
-      atualizarRankingAposQuiz(
-        usuario.id,
-        conteudo.id,
-        conteudo.categoria,
-        pontos,
-        acertos,
-        conteudo.quiz!.length,
-        tempoGasto
-      );
-      
-      console.log('Ranking atualizado após conclusão do quiz', {
-        usuarioId: usuario.id, 
-        quizId: conteudo.id, 
-        pontosGanhos: pontos, 
-        acertos
-      });
-    }
-
-    // Salvar progresso
-    const progresso = {
-      usuarioId: usuario.id,
-      conteudoId: conteudo.id,
-      progresso: 100,
-      concluido: true,
-      pontos,
-      tempoGasto,
-      dataInicio: new Date(inicioTempo),
-      dataConclusao: new Date()
     };
+    fetchQuiz();
+  }, [id]);
 
-    salvarProgresso(progresso);
+  useEffect(() => {
+    if (timeLeft > 0 && !result && !loading) {
+      const timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
+      return () => clearInterval(timer);
+    } else if (timeLeft === 0 && !result && !loading && quiz) {
+      handleSubmitQuiz(); // Time up!
+    }
+  }, [timeLeft, result, loading, quiz]);
+
+  const handleOptionSelect = (optionId: string) => {
+    setSelectedOptionId(optionId);
   };
 
-  const handleVoltarConteudo = () => {
-    navigate(`/conteudo/${id}`);
+  const handleNextQuestion = () => {
+    if (!quiz || selectedOptionId === null) return;
+
+    const currentQuestion = quiz.questions[currentQuestionIndex];
+    
+    // Save answer
+    setAnswers(prev => ({
+      ...prev,
+      [currentQuestion.id]: selectedOptionId
+    }));
+
+    if (currentQuestionIndex < quiz.questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setSelectedOptionId(null);
+    } else {
+      // It was the last question, submit
+      handleSubmitQuiz({ ...answers, [currentQuestion.id]: selectedOptionId });
+    }
   };
 
-  if (!conteudo || conteudo.tipo !== 'quiz' || !conteudo.quiz) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <Header />
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Quiz não encontrado</h1>
-            <button
-              onClick={() => navigate('/marketplace')}
-              className="text-blue-600 hover:text-blue-800"
-            >
-              Voltar ao Marketplace
-            </button>
-          </div>
+  const handleSubmitQuiz = async (finalAnswers?: Record<string, string>) => {
+    if (!quiz || !id) return;
+    
+    const answersToSubmit = finalAnswers || answers;
+    
+    try {
+      setSubmitting(true);
+      const quizResult = await quizService.submitQuiz(id, answersToSubmit);
+      setResult(quizResult);
+    } catch (error) {
+      console.error("Failed to submit quiz", error);
+      // Handle error (maybe show toast)
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  if (loading) {
+     return (
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
         </div>
-      </div>
+     );
+  }
+
+  if (!quiz) {
+    return (
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center flex-col">
+            <h2 className="text-xl text-gray-800 dark:text-white mb-4">Quiz não encontrado.</h2>
+            <button onClick={() => navigate(-1)} className="text-blue-600 hover:underline">Voltar</button>
+        </div>
     );
   }
 
-  if (quizConcluido) {
-    const acertos = respostas.filter((resposta, index) => 
-      resposta === conteudo.quiz![index].respostaCerta
-    ).length;
-    const percentualAcerto = Math.round((acertos / conteudo.quiz.length) * 100);
+  if (result) {
+    const percentage = (result.score / result.totalPoints) * 100; // Assuming totalPoints is sum of points
+    // Or if backend returns percentage directly/score as count. 
+    // Let's assume score is points earned and totalPoints includes max possible.
+    
+    // Fallback if backend returns simple count
+    const displayPercentage = result.totalPoints > 0 ? (result.score / result.totalPoints) * 100 : 0;
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-yellow-50">
-        <Header />
-        
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
-            <div className="w-20 h-20 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Trophy className="w-10 h-10 text-white" />
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+        <div className="max-w-3xl mx-auto px-4 py-12">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 text-center border border-gray-100 dark:border-gray-700">
+            <div className="mb-6">
+              {displayPercentage >= 70 ? (
+                <CheckCircle className="w-20 h-20 text-green-500 mx-auto" />
+              ) : (
+                <AlertCircle className="w-20 h-20 text-yellow-500 mx-auto" />
+              )}
+            </div>
+            
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+              {displayPercentage >= 70 ? 'Parabéns!' : 'Continue Tentando!'}
+            </h2>
+            
+            <p className="text-gray-600 dark:text-gray-400 mb-8 text-lg">
+              Você fez <span className="font-bold text-gray-900 dark:text-white">{result.score}</span> pontos.
+              <br/>
+              Acertou <span className="font-bold text-green-600">{result.correctAnswers}</span> questões.
+               {result['xp earned'] > 0 && <span className="block mt-2 text-sm text-blue-500">+{result['xp earned']} XP ganhos!</span>}
+            </p>
+            
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 mb-8">
+              <div 
+                className={`h-4 rounded-full transition-all duration-1000 ${
+                  displayPercentage >= 70 ? 'bg-green-500' : 'bg-yellow-500'
+                }`}
+                style={{ width: `${displayPercentage}%` }}
+              ></div>
             </div>
 
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">
-              Quiz Concluído! 🎉
-            </h1>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="bg-blue-50 rounded-xl p-6">
-                <div className="text-3xl font-bold text-blue-600 mb-2">{acertos}</div>
-                <div className="text-gray-600">Acertos</div>
-              </div>
-              
-              <div className="bg-yellow-50 rounded-xl p-6">
-                <div className="text-3xl font-bold text-yellow-600 mb-2">{pontuacao}</div>
-                <div className="text-gray-600">Pontos Ganhos</div>
-              </div>
-              
-              <div className="bg-green-50 rounded-xl p-6">
-                <div className="text-3xl font-bold text-green-600 mb-2">{percentualAcerto}%</div>
-                <div className="text-gray-600">Aproveitamento</div>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-center space-x-1 mb-8">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star
-                  key={star}
-                  className={`w-8 h-8 ${
-                    percentualAcerto >= star * 20
-                      ? 'text-yellow-400 fill-current'
-                      : 'text-gray-300'
-                  }`}
-                />
-              ))}
-            </div>
-
-            <div className="space-y-4">
-              <button
-                onClick={handleVoltarConteudo}
-                className="w-full bg-gradient-to-r from-blue-500 to-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:from-blue-600 hover:to-blue-800 transition-all transform hover:scale-105"
-              >
-                Voltar ao Conteúdo
-              </button>
-              
+            <div className="flex justify-center space-x-4">
               <button
                 onClick={() => navigate('/marketplace')}
-                className="w-full border-2 border-blue-500 text-blue-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-blue-50 transition-all"
+                className="px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
               >
-                Explorar Mais Conteúdos
+                Voltar para Cursos
+              </button>
+              <button
+                onClick={() => window.location.reload()}
+                className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-lg"
+              >
+                Tentar Novamente
               </button>
             </div>
           </div>
@@ -214,109 +167,96 @@ export default function Quiz() {
     );
   }
 
-  const pergunta = conteudo.quiz[perguntaAtual];
+  const currentQuestion = quiz.questions[currentQuestionIndex];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-400 to-blue-600">
-      <Header />
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
       
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Cabeçalho do Quiz */}
+        {/* Quiz Header */}
         <div className="flex items-center justify-between mb-8">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center space-x-2 text-white hover:text-blue-200 transition-colors"
+            className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
             <span>Voltar</span>
           </button>
           
-          <div className="text-white text-center">
-            <h1 className="text-2xl font-bold">{conteudo.titulo}</h1>
-            <p className="text-blue-100">Quiz Interativo</p>
-          </div>
-          
-          <div className="flex items-center space-x-2 bg-white bg-opacity-20 rounded-lg px-4 py-2">
-            <Clock className="w-5 h-5 text-white" />
-            <span className="text-white font-bold text-lg">
-              {String(Math.floor(tempoRestante / 60)).padStart(2, '0')}:
-              {String(tempoRestante % 60).padStart(2, '0')}
+          <div className="flex items-center space-x-2 bg-white dark:bg-gray-800 rounded-lg px-4 py-2 shadow-sm">
+            <Clock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <span className="font-bold text-lg text-gray-900 dark:text-white">
+              {formatTime(timeLeft)}
             </span>
           </div>
         </div>
 
-        {/* Card do Quiz */}
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          {/* Barra de Progresso */}
-          <div className="bg-gray-200 h-2">
+        {/* Quiz Card */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-100 dark:border-gray-700">
+          {/* Progress Bar */}
+          <div className="bg-gray-200 dark:bg-gray-700 h-2">
             <div 
-              className="bg-gradient-to-r from-blue-500 to-yellow-500 h-2 transition-all duration-300"
-              style={{ width: `${((perguntaAtual + 1) / conteudo.quiz.length) * 100}%` }}
+              className="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 transition-all duration-300"
+              style={{ width: `${((currentQuestionIndex + 1) / quiz.questions.length) * 100}%` }}
             ></div>
           </div>
 
           <div className="p-8">
-            {/* Cabeçalho da Pergunta */}
+            {/* Question Header */}
             <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-bold text-gray-900">
-                Pergunta {perguntaAtual + 1} de {conteudo.quiz.length}
+              <h2 className="text-xl text-gray-500 dark:text-gray-400 font-medium">
+                Questão {currentQuestionIndex + 1} de {quiz.questions.length}
               </h2>
-              <div className="text-sm text-gray-500">
-                {pergunta.pontos} pontos
-              </div>
             </div>
 
-            {/* Pergunta */}
+            {/* Question Text */}
             <div className="mb-8">
-              <h3 className="text-xl font-semibold text-gray-800 mb-6">
-                {pergunta.pergunta}
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 leading-relaxed">
+                {currentQuestion.text}
               </h3>
 
-              {/* Opções */}
+              {/* Options */}
               <div className="space-y-4">
-                {pergunta.opcoes.map((opcao, index) => (
+                {currentQuestion.options.map((option) => (
                   <button
-                    key={index}
-                    onClick={() => handleSelecionarResposta(index)}
-                    className={`w-full p-4 text-left rounded-xl border-2 transition-all ${
-                      respostaSelecionada === index
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-gray-100'
+                    key={option.id}
+                    onClick={() => handleOptionSelect(option.id)}
+                    className={`w-full p-4 text-left rounded-xl border-2 transition-all duration-200 group ${
+                      selectedOptionId === option.id
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-md'
+                        : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 hover:border-blue-300 dark:hover:border-blue-700 hover:bg-white dark:hover:bg-gray-800'
                     }`}
                   >
                     <div className="flex items-center space-x-3">
-                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                        respostaSelecionada === index
+                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
+                        selectedOptionId === option.id
                           ? 'border-blue-500 bg-blue-500'
-                          : 'border-gray-300'
+                          : 'border-gray-300 dark:border-gray-600 group-hover:border-blue-400'
                       }`}>
-                        {respostaSelecionada === index && (
-                          <div className="w-3 h-3 bg-white rounded-full"></div>
+                        {selectedOptionId === option.id && (
+                          <div className="w-2.5 h-2.5 bg-white rounded-full"></div>
                         )}
                       </div>
-                      <span className="text-gray-800 font-medium">{opcao}</span>
+                      <span className={`text-lg font-medium ${
+                         selectedOptionId === option.id ? 'text-blue-900 dark:text-blue-100' : 'text-gray-700 dark:text-gray-300'
+                      }`}>{option.text}</span>
                     </div>
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Botão de Próxima */}
-            <div className="flex justify-end">
+            {/* Next Button */}
+            <div className="flex justify-end pt-4 border-t border-gray-100 dark:border-gray-700">
               <button
-                onClick={handleProximaPergunta}
-                disabled={respostaSelecionada === null}
-                className="bg-gradient-to-r from-blue-500 to-blue-700 text-white px-8 py-3 rounded-xl font-semibold hover:from-blue-600 hover:to-blue-800 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                onClick={handleNextQuestion}
+                disabled={selectedOptionId === null || submitting}
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none shadow-lg"
               >
-                {perguntaAtual < conteudo.quiz.length - 1 ? 'Próxima Pergunta' : 'Finalizar Quiz'}
+                {submitting ? 'Enviando...' : (currentQuestionIndex < quiz.questions.length - 1 ? 'Próxima Pergunta' : 'Finalizar Quiz')}
               </button>
             </div>
           </div>
-        </div>
-
-        {/* Informações Adicionais */}
-        <div className="mt-6 text-center text-white text-sm opacity-80">
-          <p>Responda todas as perguntas para ganhar pontos e subir no ranking!</p>
         </div>
       </div>
     </div>

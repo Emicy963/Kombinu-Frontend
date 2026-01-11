@@ -4,13 +4,35 @@
  */
 
 import React from 'react';
-import { Trophy, Medal, Award, TrendingUp, TrendingDown, Users, Calendar, Globe } from 'lucide-react';
+import { 
+  Trophy, 
+  Medal, 
+  Award, 
+  TrendingUp, 
+  TrendingDown, 
+  Users, 
+  Calendar, 
+  Globe, 
+  Crown, 
+  ArrowUp, 
+  ArrowDown, 
+  Minus 
+} from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { useRanking, useRankingStats } from '../hooks/useRanking';
 import { logger } from '../utils/logger';
-
+import { useAuth } from '../contexts/AuthContext';
+import { useEffect, useState } from 'react';
 type PeriodoRanking = 'global' | 'semanal' | 'mensal';
+
+interface RankingUser {
+  id: string;
+  name: string;
+  points: number;
+  trend: 'up' | 'down' | 'same';
+  avatar?: string;
+}
 
 /**
  * Componente principal da página de Rankings
@@ -131,104 +153,156 @@ export default function Ranking() {
       ))}
     </div>
   );
+  const { usuario } = useAuth();
+  // const { obterRanking } = useData();
+  const [rankingData, setRankingData] = useState<RankingUser[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  /**
-   * Renderiza a lista de rankings
-   */
-  const renderizarListaRankings = () => {
-    if (carregando) {
-      return (
-        <Card className="p-8 text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Carregando rankings...</p>
-        </Card>
-      );
+  useEffect(() => {
+    // Mock data fetching
+    const fetchRanking = async () => {
+        setLoading(true);
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 800));
+
+        const mockData: RankingUser[] = [
+            { id: '1', name: 'Ana Silva', points: 2500, trend: 'up' },
+            { id: '2', name: 'Carlos Souza', points: 2350, trend: 'same' },
+            { id: '3', name: 'Beatriz Oliveira', points: 2100, trend: 'down' },
+            { id: '4', name: 'João Pereira', points: 1950, trend: 'up' },
+            { id: '5', name: 'Maria Costa', points: 1800, trend: 'same' },
+             // Add current user if not in top 5 for demo purposes
+             ...(usuario ? [{ id: usuario.id, name: usuario.nome, points: usuario.pontos, trend: 'same' as const }] : [])
+        ].sort((a, b) => b.points - a.points).slice(0, 10); // Keep top 10
+
+        // Remove duplicate if user was added and already in top list (simple logic for mock)
+         const uniqueData = mockData.filter((v,i,a)=>a.findIndex(t=>(t.id === v.id))===i);
+
+        setRankingData(uniqueData);
+        setLoading(false);
+    };
+
+    fetchRanking();
+  }, [usuario]);
+
+
+  const getPositionIcon = (index: number) => {
+    switch (index) {
+      case 0:
+        return <Crown className="w-8 h-8 text-yellow-500" />;
+      case 1:
+        return <Medal className="w-8 h-8 text-gray-400" />;
+      case 2:
+        return <Medal className="w-8 h-8 text-orange-400" />;
+      default:
+        return <span className="text-xl font-bold text-gray-500 w-8 text-center">{index + 1}</span>;
     }
-
-    if (rankingAtual.length === 0) {
-      return (
-        <Card className="p-8 text-center">
-          <Trophy className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-700 mb-2">
-            Nenhum ranking disponível
-          </h3>
-          <p className="text-gray-600">
-            Complete alguns quizzes para aparecer no ranking!
-          </p>
-        </Card>
-      );
-    }
-
-    return (
-      <Card className="overflow-hidden">
-        <div className="p-4 bg-gray-50 border-b">
-          <h3 className="text-lg font-semibold text-gray-900">
-            Ranking {filtroAtivo.charAt(0).toUpperCase() + filtroAtivo.slice(1)}
-          </h3>
-        </div>
-        
-        <div className="divide-y divide-gray-200">
-          {rankingAtual.map((usuario, index) => (
-            <div
-              key={usuario.usuarioId}
-              className={`p-4 flex items-center justify-between hover:bg-gray-50 transition-colors ${
-                index < 3 ? 'bg-gradient-to-r from-yellow-50 to-transparent' : ''
-              }`}
-            >
-              <div className="flex items-center space-x-4">
-                {/* Posição e medalha */}
-                <div className="flex items-center space-x-2">
-                  {renderizarMedalha(usuario.posicao)}
-                  {renderizarTendencia(usuario.usuarioId)}
-                </div>
-                
-                {/* Avatar e informações do usuário */}
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
-                    {usuario.nome.charAt(0).toUpperCase()}
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">{usuario.nome}</p>
-                    <p className="text-sm text-gray-600">
-                      {usuario.quizzesCompletados} quizzes • {usuario.mediaAcertos.toFixed(1)}% acertos
-                    </p>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Pontuação */}
-              <div className="text-right">
-                <p className="text-lg font-bold text-gray-900">{usuario.pontos}</p>
-                <p className="text-sm text-gray-600">pontos</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </Card>
-    );
   };
 
+  const getTrendIcon = (trend: 'up' | 'down' | 'same') => {
+    switch (trend) {
+      case 'up':
+        return <ArrowUp className="w-4 h-4 text-green-500" />;
+      case 'down':
+        return <ArrowDown className="w-4 h-4 text-red-500" />;
+      default:
+        return <Minus className="w-4 h-4 text-gray-400" />;
+    }
+  };
+
+  if (loading) {
+     return (
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+     );
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Cabeçalho */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            🏆 Rankings
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            Ranking Global 🏆
           </h1>
-          <p className="text-gray-600">
-            Veja como você se compara com outros usuários
+          <p className="text-xl text-gray-600 dark:text-gray-400">
+            Veja quem são os maiores aprendizes da comunidade KOMBINU
           </p>
         </div>
 
-        {/* Estatísticas gerais */}
-        {renderizarEstatisticas()}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-100 dark:border-gray-700">
+          {/* Cabeçalho da Tabela */}
+          <div className="grid grid-cols-12 gap-4 p-6 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-100 dark:border-gray-700 text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+            <div className="col-span-2 text-center">Posição</div>
+            <div className="col-span-6">Usuário</div>
+            <div className="col-span-2 text-center">Pontos</div>
+            <div className="col-span-2 text-center">Tendência</div>
+          </div>
 
-        {/* Filtros de período */}
-        {renderizarFiltros()}
+          {/* Lista de Ranking */}
+          <div className="divide-y divide-gray-100 dark:divide-gray-700">
+            {rankingData.map((user, index) => (
+              <div 
+                key={user.id}
+                className={`grid grid-cols-12 gap-4 p-6 items-center transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/30 ${
+                  usuario?.id === user.id ? 'bg-blue-50 dark:bg-blue-900/10' : ''
+                }`}
+              >
+                <div className="col-span-2 flex justify-center items-center">
+                  {getPositionIcon(index)}
+                </div>
+                
+                <div className="col-span-6 flex items-center space-x-4">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md">
+                    {user.avatar ? (
+                      <img src={user.avatar} alt={user.name} className="w-full h-full rounded-full object-cover" />
+                    ) : (
+                      <span className="text-lg">{user.name.charAt(0)}</span>
+                    )}
+                  </div>
+                  <div>
+                    <p className={`font-bold ${
+                      usuario?.id === user.id ? 'text-blue-600 dark:text-blue-400' : 'text-gray-900 dark:text-white'
+                    }`}>
+                      {user.name} {usuario?.id === user.id && '(Você)'}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Nível {Math.floor(user.points / 1000) + 1}</p>
+                  </div>
+                </div>
+                
+                <div className="col-span-2 text-center font-bold text-gray-900 dark:text-white">
+                  {user.points.toLocaleString()}
+                </div>
+                
+                <div className="col-span-2 flex justify-center items-center">
+                  {getTrendIcon(user.trend)}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
 
-        {/* Lista de rankings */}
-        {renderizarListaRankings()}
+        {/* Card do Usuário (se não estiver no top 10) */}
+        {usuario && !rankingData.find(u => u.id === usuario.id) && (
+           <div className="mt-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-blue-100 dark:border-blue-900/30 p-6">
+             <div className="flex items-center justify-between">
+               <div className="flex items-center space-x-4">
+                 <div className="text-xl font-bold text-gray-500 dark:text-gray-400 w-8 text-center">42</div>
+                 <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xl">
+                   {usuario.nome.charAt(0)}
+                 </div>
+                 <div>
+                   <p className="font-bold text-gray-900 dark:text-white">{usuario.nome} (Você)</p>
+                   <p className="text-sm text-gray-500 dark:text-gray-400">Continue aprendendo para subir no ranking!</p>
+                 </div>
+               </div>
+               <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                 {usuario.pontos} pts
+               </div>
+             </div>
+           </div>
+        )}
       </div>
     </div>
   );
