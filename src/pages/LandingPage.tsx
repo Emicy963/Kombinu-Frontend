@@ -4,6 +4,8 @@ import { Logo } from '../components/ui/Logo';
 import { Footer } from '../components/layout/Footer';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
+import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { 
   Trophy, 
   Users, 
@@ -21,10 +23,17 @@ import {
   Shield,
   Smartphone,
   Monitor,
-  Tablet
+  Tablet,
+  LogOut,
+  User,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 export default function LandingPage() {
+  const { usuario, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
+
   // Enhanced statistics with more professional metrics
   const stats = [
     { value: '25K+', label: 'Conteúdos Ativos', icon: BookOpen, color: 'from-blue-500 to-blue-600' },
@@ -107,17 +116,58 @@ export default function LandingPage() {
             </nav>
             
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="sm" onClick={() => window.location.href = '/login'}>
-                Entrar
-              </Button>
-              <Button 
-                variant="primary" 
-                size="sm" 
-                onClick={() => window.location.href = '/register'}
-                className="font-poppins bg-kombinu-neon-blue text-gray-900 hover:bg-kombinu-dark-blue hover:text-white shadow-lg hover:shadow-xl transition-all dark:bg-dark-interactive-primary dark:text-white"
+              {/* Dark Mode Toggle */}
+              <button
+                onClick={toggleTheme}
+                className="p-2 dark-text-muted hover:text-blue-600 hover:bg-gray-100 rounded-lg transition-all duration-200 dark:hover:bg-dark-bg-hover dark:hover:text-dark-interactive-primary"
+                aria-label="Alternar tema"
               >
-                Começar Gratuitamente
-              </Button>
+                {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              </button>
+
+              {usuario ? (
+                <div className="flex items-center space-x-4">
+                  <div className="hidden sm:flex items-center space-x-3">
+                    <div className="text-right">
+                      <p className="text-sm font-semibold dark-text-primary truncate max-w-32 font-montserrat">
+                        {usuario.nome}
+                      </p>
+                      <div className="flex items-center space-x-2 text-xs dark-text-muted font-lato">
+                        <span className="flex items-center space-x-1">
+                          <Trophy className="w-3 h-3" />
+                          <span>{usuario.pontos.toLocaleString()}</span>
+                        </span>
+                      </div>
+                    </div>
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-700 rounded-full flex items-center justify-center shadow-md">
+                      <User className="w-5 h-5 text-white" />
+                    </div>
+                  </div>
+                  
+                  <Button 
+                    variant="primary" 
+                    size="sm" 
+                    onClick={() => window.location.href = usuario.tipo === 'criador' ? '/dashboard/creator' : '/dashboard/learner'}
+                    className="font-poppins bg-kombinu-neon-blue text-gray-900 hover:bg-kombinu-dark-blue hover:text-white shadow-lg hover:shadow-xl transition-all dark:bg-dark-interactive-primary dark:text-white"
+                  >
+                    Ir para Dashboard
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <Button variant="ghost" size="sm" onClick={() => window.location.href = '/login'}>
+                    Entrar
+                  </Button>
+                  <Button 
+                    variant="primary" 
+                    size="sm" 
+                    onClick={() => window.location.href = '/register'}
+                    className="font-poppins bg-kombinu-neon-blue text-gray-900 hover:bg-kombinu-dark-blue hover:text-white shadow-lg hover:shadow-xl transition-all dark:bg-dark-interactive-primary dark:text-white"
+                  >
+                    Começar Gratuitamente
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>

@@ -1,194 +1,84 @@
-/**
- * Serviço para gerenciar conteúdos
- * Centraliza operações CRUD de conteúdos
- */
-
-import axios from 'axios';
-import type { Conteudo, FormularioConteudo } from '../types';
-import { API_BASE_URL } from '../utils/constants';
-import { storageService } from './storageService';
-
-/**
- * Classe para gerenciar operações de conteúdo
- */
-class ContentService {
-  /**
-   * Carrega todos os conteúdos
-   * @returns Array de conteúdos
-   */
-  async carregarConteudos(): Promise<Conteudo[]> {
-    try {
-      // Temporariamente desabilitado - endpoint não existe na API
-      // const response = await axios.get(`${API_BASE_URL}/contents`);
-      // return response.data;
-
-      // Fallback direto para localStorage
-      return storageService.carregarConteudos();
-    } catch (error) {
-      console.error('Erro ao carregar conteúdos:', error);
-      // Fallback para localStorage se a API falhar
-      return storageService.carregarConteudos();
-    }
-  }
-
-  /**
-   * Busca um conteúdo específico por ID
-   * @param id - ID do conteúdo
-   * @returns Conteúdo encontrado ou undefined
-   */
-  async obterConteudo(id: string): Promise<Conteudo | undefined> {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/contents/${id}`);
-      return response.data;
-    } catch (error) {
-      console.error('Erro ao obter conteúdo:', error);
-      return undefined;
-    }
-  }
-
-  /**
-   * Busca conteúdos de um criador específico
-   * @param criadorId - ID do criador
-   * @returns Array de conteúdos do criador
-   */
-  async obterConteudosPorCriador(criadorId: string): Promise<Conteudo[]> {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/contents?creatorId=${criadorId}`);
-      return response.data;
-    } catch (error) {
-      console.error('Erro ao obter conteúdos por criador:', error);
-      return [];
-    }
-  }
-
-  /**
-   * Busca apenas conteúdos públicos
-   * @returns Array de conteúdos públicos
-   */
-  async obterConteudosPublicos(): Promise<Conteudo[]> {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/contents?public=true`);
-      return response.data;
-    } catch (error) {
-      console.error('Erro ao obter conteúdos públicos:', error);
-      return [];
-    }
-  }
-
-  /**
-   * Cria um novo conteúdo
-   * @param dadosConteudo - Dados do formulário de criação
-   * @param criadorId - ID do criador
-   * @param criadorNome - Nome do criador
-   * @returns Conteúdo criado
-   */
-  async criarConteudo(
-    dadosConteudo: FormularioConteudo, 
-    criadorId: string, 
-    criadorNome: string
-  ): Promise<Conteudo> {
-    try {
-      const response = await axios.post(`${API_BASE_URL}/contents`, {
-        ...dadosConteudo,
-        criadorId,
-        criadorNome
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Erro ao criar conteúdo:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Atualiza um conteúdo existente
-   * @param id - ID do conteúdo
-   * @param dadosAtualizacao - Dados a serem atualizados
-   * @returns Conteúdo atualizado ou undefined se não encontrado
-   */
-  async atualizarConteudo(id: string, dadosAtualizacao: Partial<Conteudo>): Promise<Conteudo | undefined> {
-    try {
-      const response = await axios.put(`${API_BASE_URL}/contents/${id}`, dadosAtualizacao);
-      return response.data;
-    } catch (error) {
-      console.error('Erro ao atualizar conteúdo:', error);
-      return undefined;
-    }
-  }
-
-  /**
-   * Remove um conteúdo
-   * @param id - ID do conteúdo a ser removido
-   * @returns Boolean indicando sucesso da operação
-   */
-  async deletarConteudo(id: string): Promise<boolean> {
-    try {
-      await axios.delete(`${API_BASE_URL}/contents/${id}`);
-      return true;
-    } catch (error) {
-      console.error('Erro ao deletar conteúdo:', error);
-      return false;
-    }
-  }
-
-  /**
-   * Incrementa o contador de visualizações
-   * @param id - ID do conteúdo
-   */
-  async incrementarVisualizacao(id: string): Promise<void> {
-    try {
-      await axios.put(`${API_BASE_URL}/contents/${id}/view`);
-    } catch (error) {
-      console.error('Erro ao incrementar visualização:', error);
-    }
-  }
-
-  /**
-   * Incrementa o contador de likes
-   * @param id - ID do conteúdo
-   */
-  async toggleLike(id: string): Promise<void> {
-    try {
-      await axios.put(`${API_BASE_URL}/contents/${id}/like`);
-    } catch (error) {
-      console.error('Erro ao dar like:', error);
-    }
-  }
-
-  /**
-   * Filtra conteúdos baseado em critérios de busca
-   * @param conteudos - Array de conteúdos para filtrar
-   * @param filtros - Objeto com critérios de filtro
-   * @returns Array de conteúdos filtrados
-   */
-  filtrarConteudos(
-    conteudos: Conteudo[],
-    filtros: {
-      busca?: string;
-      categoria?: string;
-      tipo?: string;
-      dificuldade?: string;
-    }
-  ): Conteudo[] {
-    return conteudos.filter(conteudo => {
-      // Filtro de busca por título e descrição
-      const matchBusca = !filtros.busca || 
-        conteudo.titulo.toLowerCase().includes(filtros.busca.toLowerCase()) ||
-        conteudo.descricao.toLowerCase().includes(filtros.busca.toLowerCase());
-
-      // Filtro por categoria
-      const matchCategoria = !filtros.categoria || conteudo.categoria === filtros.categoria;
-
-      // Filtro por tipo
-      const matchTipo = !filtros.tipo || conteudo.tipo === filtros.tipo;
-
-      // Filtro por dificuldade
-      const matchDificuldade = !filtros.dificuldade || conteudo.dificuldade === filtros.dificuldade;
-
-      return matchBusca && matchCategoria && matchTipo && matchDificuldade;
-    });
-  }
+export interface Content {
+  id: string;
+  title: string;
+  description: string;
+  thumbnail: string;
+  category: string;
+  level: 'Iniciante' | 'Intermediário' | 'Avançado';
+  duration: string;
+  rating: number;
+  students: number;
+  price: number;
 }
 
-// Exporta uma instância única do serviço (Singleton)
-export const contentService = new ContentService();
+export const contentService = {
+  getAll: async (): Promise<Content[]> => {
+    // Mock data for now
+    return [
+      {
+        id: '1',
+        title: 'Introdução à Programação Python',
+        description: 'Aprenda os fundamentos da linguagem Python do zero e crie seus primeiros scripts.',
+        thumbnail: 'https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=500&auto=format&fit=crop&q=60',
+        category: 'Programação',
+        level: 'Iniciante',
+        duration: '12h',
+        rating: 4.8,
+        students: 1250,
+        price: 0
+      },
+      {
+        id: '2',
+        title: 'Marketing Digital para Redes Sociais',
+        description: 'Domine as estratégias de marketing para crescer sua marca no Instagram e TikTok.',
+        thumbnail: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500&auto=format&fit=crop&q=60',
+        category: 'Marketing',
+        level: 'Iniciante',
+        duration: '8h',
+        rating: 4.6,
+        students: 850,
+        price: 0
+      },
+      {
+        id: '3',
+        title: 'Design UI/UX com Figma',
+        description: 'Crie interfaces modernas e experiências de usuário incríveis utilizando o Figma.',
+        thumbnail: 'https://images.unsplash.com/photo-1586717791821-3f44a5638d48?w=500&auto=format&fit=crop&q=60',
+        category: 'Design',
+        level: 'Intermediário',
+        duration: '20h',
+        rating: 4.9,
+        students: 2100,
+        price: 15000
+      },
+      {
+        id: '4',
+        title: 'Gestão Financeira Pessoal',
+        description: 'Aprenda a controlar seus gastos, investir e alcançar a liberdade financeira.',
+        thumbnail: 'https://images.unsplash.com/photo-1554224155-98406858d0cb?w=500&auto=format&fit=crop&q=60',
+        category: 'Finanças',
+        level: 'Iniciante',
+        duration: '6h',
+        rating: 4.7,
+        students: 3200,
+        price: 5000
+      },
+      {
+        id: '5',
+        title: 'Inglês para Negócios',
+        description: 'Melhore seu vocabulário e comunicação em inglês no ambiente corporativo.',
+        thumbnail: 'https://images.unsplash.com/photo-1544717302-de2939b7ef71?w=500&auto=format&fit=crop&q=60',
+        category: 'Idiomas',
+        level: 'Avançado',
+        duration: '15h',
+        rating: 4.5,
+        students: 1800,
+        price: 25000
+      }
+    ];
+  },
+
+  getCategories: async (): Promise<string[]> => {
+    return ['Todos', 'Programação', 'Marketing', 'Design', 'Finanças', 'Idiomas', 'Ciências'];
+  }
+};
