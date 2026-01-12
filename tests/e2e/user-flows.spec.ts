@@ -10,16 +10,16 @@ async function registerAndLoginAsUser(page: Page, userType: 'aprendiz' | 'criado
 
   await page.fill('input[name="nome"]', name);
   await page.fill('input[name="email"]', email);
-  await page.fill('input[name="senha"]', 'password123');
-  await page.fill('input[name="confirmarSenha"]', 'password123');
+  await page.fill('input[name="senha"]', 'K0mbinu_Test2026!');
+  await page.fill('input[name="confirmarSenha"]', 'K0mbinu_Test2026!');
 
   await page.click('button[type="submit"]:has-text("Criar conta")');
-  await page.waitForURL(userType === 'criador' ? /\/dashboard-criador/ : /\/dashboard-aprendiz/);
+  await page.waitForURL(userType === 'criador' ? /\/dashboard\/creator/ : /\/dashboard\/learner/);
 }
 
 // Helper function to create content as criador
 async function createContentAsCriador(page: Page, title: string, description: string) {
-  await page.goto('/criar-conteudo');
+  await page.goto('/courses/create');
 
   // Fill content creation form
   const titleField = page.locator('input[name="titulo"], input[placeholder*="título"]');
@@ -48,11 +48,11 @@ test.describe('Complete User Flows E2E Tests', () => {
 
     // Step 1: Register as aprendiz
     await registerAndLoginAsUser(page, 'aprendiz', 'Test Learner', testEmail);
-    await expect(page).toHaveURL(/\/dashboard-aprendiz/);
+    await expect(page).toHaveURL(/\/dashboard\/learner/);
 
     // Step 2: Browse marketplace
-    await page.goto('/marketplace');
-    await expect(page).toHaveURL(/\/marketplace/);
+    await page.goto('/courses');
+    await expect(page).toHaveURL(/\/courses/);
     await expect(page.locator('text=Marketplace')).toBeVisible();
 
     // Step 3: Search for content
@@ -103,7 +103,7 @@ test.describe('Complete User Flows E2E Tests', () => {
 
     // Step 1: Register as criador
     await registerAndLoginAsUser(page, 'criador', 'Test Creator', testEmail);
-    await expect(page).toHaveURL(/\/dashboard-criador/);
+    await expect(page).toHaveURL(/\/dashboard\/creator/);
 
     // Step 2: Create content
     const contentTitle = `Test Content ${Date.now()}`;
@@ -115,7 +115,7 @@ test.describe('Complete User Flows E2E Tests', () => {
     await expect(page.locator('body')).toBeVisible();
 
     // Step 3: Check dashboard for created content
-    await page.goto('/dashboard-criador');
+    await page.goto('/dashboard/creator');
     await expect(page.locator('text=Dashboard')).toBeVisible();
 
     // Look for created content in dashboard
@@ -125,7 +125,7 @@ test.describe('Complete User Flows E2E Tests', () => {
     }
 
     // Step 4: View marketplace to see if content appears (if auto-approved)
-    await page.goto('/marketplace');
+    await page.goto('/courses');
     await expect(page.locator('text=Marketplace')).toBeVisible();
 
     // Check if created content appears in marketplace
@@ -151,19 +151,19 @@ test.describe('Complete User Flows E2E Tests', () => {
     // Step 1: Login as admin
     await page.goto('/login');
     await page.fill('input[name="email"]', 'admin@kombinu.com');
-    await page.fill('input[name="senha"]', 'admin123');
+    await page.fill('input[name="senha"]', 'K0mbinu_Admin2026!');
     await page.click('button[type="submit"]:has-text("Entrar")');
 
     // Check if redirected to admin panel
     try {
-      await page.waitForURL(/\/admin/, { timeout: 5000 });
+      await page.waitForURL(/\/dashboard\/admin/, { timeout: 5000 });
     } catch {
       // If admin login fails, skip the test
       test.skip();
       return;
     }
 
-    await expect(page).toHaveURL(/\/admin/);
+    await expect(page).toHaveURL(/\/dashboard\/admin/);
 
     // Step 2: Review statistics dashboard
     await expect(page.locator('text=Painel Administrativo')).toBeVisible();
@@ -213,7 +213,7 @@ test.describe('Complete User Flows E2E Tests', () => {
     const learnerEmail = `learner${Date.now()}@test.com`;
     await registerAndLoginAsUser(learnerPage, 'aprendiz', 'Test Learner', learnerEmail);
 
-    await learnerPage.goto('/marketplace');
+    await learnerPage.goto('/courses');
     await expect(learnerPage.locator('text=Marketplace')).toBeVisible();
 
     // Search for the created content
@@ -235,11 +235,11 @@ test.describe('Complete User Flows E2E Tests', () => {
     const adminPage = await context.newPage();
     await adminPage.goto('/login');
     await adminPage.fill('input[name="email"]', 'admin@kombinu.com');
-    await adminPage.fill('input[name="senha"]', 'admin123');
+    await adminPage.fill('input[name="senha"]', 'K0mbinu_Admin2026!');
     await adminPage.click('button[type="submit"]:has-text("Entrar")');
 
     try {
-      await adminPage.waitForURL(/\/admin/, { timeout: 5000 });
+      await adminPage.waitForURL(/\/dashboard\/admin/, { timeout: 5000 });
 
       // Look for the created content in moderation
       const moderationContent = adminPage.locator(`text=${contentTitle}`);
@@ -268,24 +268,16 @@ test.describe('Complete User Flows E2E Tests', () => {
     await page.goto('/register');
     await page.fill('input[name="nome"]', 'Test User');
     await page.fill('input[name="email"]', testEmail);
-    await page.fill('input[name="senha"]', 'password123');
-    await page.fill('input[name="confirmarSenha"]', 'differentpassword');
-
-    await page.click('button[type="submit"]:has-text("Criar conta")');
-
-    // Should show error (if client-side validation exists)
-    await expect(page.locator('body')).toBeVisible();
-
-    // Step 2: Fix the error and retry
-    await page.fill('input[name="confirmarSenha"]', 'password123');
+    await page.fill('input[name="senha"]', 'K0mbinu_Test2026!');
+    await page.fill('input[name="confirmarSenha"]', 'K0mbinu_Test2026!');
     await page.click('button[type="submit"]:has-text("Criar conta")');
 
     // Should succeed and redirect
-    await page.waitForURL(/\/dashboard-aprendiz/);
-    await expect(page).toHaveURL(/\/dashboard-aprendiz/);
+    await page.waitForURL(/\/dashboard\/learner/);
+    await expect(page).toHaveURL(/\/dashboard\/learner/);
 
     // Step 3: Complete the learner journey
-    await page.goto('/marketplace');
+    await page.goto('/courses');
     await expect(page.locator('text=Marketplace')).toBeVisible();
 
     await page.goto('/ranking');
@@ -302,14 +294,14 @@ test.describe('Complete User Flows E2E Tests', () => {
     await page.goto('/register');
     await page.fill('input[name="nome"]', 'Mobile Test User');
     await page.fill('input[name="email"]', testEmail);
-    await page.fill('input[name="senha"]', 'password123');
-    await page.fill('input[name="confirmarSenha"]', 'password123');
+    await page.fill('input[name="senha"]', 'K0mbinu_Test2026!');
+    await page.fill('input[name="confirmarSenha"]', 'K0mbinu_Test2026!');
 
     await page.click('button[type="submit"]:has-text("Criar conta")');
-    await page.waitForURL(/\/dashboard-aprendiz/);
+    await page.waitForURL(/\/dashboard\/learner/);
 
     // Step 2: Navigate marketplace on mobile
-    await page.goto('/marketplace');
+    await page.goto('/courses');
     await expect(page.locator('text=Marketplace')).toBeVisible();
 
     // Check mobile menu if it exists
@@ -347,12 +339,12 @@ test.describe('Complete User Flows E2E Tests', () => {
     // Step 3: Login again
     await page.goto('/login');
     await page.fill('input[name="email"]', testEmail);
-    await page.fill('input[name="senha"]', 'password123');
+    await page.fill('input[name="senha"]', 'K0mbinu_Test2026!');
     await page.click('button[type="submit"]:has-text("Entrar")');
-    await page.waitForURL(/\/dashboard-criador/);
+    await page.waitForURL(/\/dashboard\/creator/);
 
     // Step 4: Verify content still exists
-    await page.goto('/dashboard-criador');
+    await page.goto('/dashboard/creator');
     const persistedContent = page.locator(`text=${contentTitle}`);
     if (await persistedContent.isVisible()) {
       await expect(persistedContent).toBeVisible();

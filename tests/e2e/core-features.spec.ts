@@ -10,11 +10,11 @@ async function registerAndLoginAsUser(page: Page, userType: 'aprendiz' | 'criado
 
   await page.fill('input[name="nome"]', name);
   await page.fill('input[name="email"]', email);
-  await page.fill('input[name="senha"]', 'password123');
-  await page.fill('input[name="confirmarSenha"]', 'password123');
+  await page.fill('input[name="senha"]', 'K0mbinu_Test2026!');
+  await page.fill('input[name="confirmarSenha"]', 'K0mbinu_Test2026!');
 
   await page.click('button[type="submit"]:has-text("Criar conta")');
-  await page.waitForURL(userType === 'criador' ? /\/dashboard-criador/ : /\/dashboard-aprendiz/);
+  await page.waitForURL(userType === 'criador' ? /\/dashboard\/creator/ : /\/dashboard\/learner/);
 }
 
 test.describe('Core Features E2E Tests', () => {
@@ -22,8 +22,8 @@ test.describe('Core Features E2E Tests', () => {
     const testEmail = `aprendiz${Date.now()}@test.com`;
     await registerAndLoginAsUser(page, 'aprendiz', 'Test Aprendiz', testEmail);
 
-    await page.goto('/marketplace');
-    await expect(page).toHaveURL(/\/marketplace/);
+    await page.goto('/courses');
+    await expect(page).toHaveURL(/\/courses/);
 
     // Check marketplace elements
     await expect(page.locator('text=Marketplace')).toBeVisible();
@@ -36,8 +36,8 @@ test.describe('Core Features E2E Tests', () => {
     const testEmail = `criador${Date.now()}@test.com`;
     await registerAndLoginAsUser(page, 'criador', 'Test Criador', testEmail);
 
-    await page.goto('/criar-conteudo');
-    await expect(page).toHaveURL(/\/criar-conteudo/);
+    await page.goto('/courses/create');
+    await expect(page).toHaveURL(/\/courses\/create/);
 
     // Check form elements
     await expect(page.locator('text=Criar Conteúdo')).toBeVisible();
@@ -77,17 +77,17 @@ test.describe('Core Features E2E Tests', () => {
     await registerAndLoginAsUser(page, 'aprendiz', 'Test Aprendiz', testEmail);
 
     // First go to marketplace to find content
-    await page.goto('/marketplace');
+    await page.goto('/courses');
 
     // Look for content links (adjust selector based on actual implementation)
-    const contentLink = page.locator('a[href*="/conteudo/"]').first();
+    const contentLink = page.locator('a[href*="/courses/"]').first();
 
     if (await contentLink.isVisible()) {
       const href = await contentLink.getAttribute('href');
       await contentLink.click();
 
       // Should navigate to content view
-      await expect(page).toHaveURL(href || /\/conteudo\/\d+/);
+      await expect(page).toHaveURL(href || /\/courses\/\d+/);
 
       // Check content view elements
       await expect(page.locator('text=Visualizar Conteúdo')).toBeVisible();
@@ -124,7 +124,7 @@ test.describe('Core Features E2E Tests', () => {
     await registerAndLoginAsUser(page, 'aprendiz', 'Test Aprendiz', testEmail);
 
     // Should already be on dashboard after login
-    await expect(page).toHaveURL(/\/dashboard-aprendiz/);
+    await expect(page).toHaveURL(/\/dashboard\/learner/);
 
     // Check dashboard elements
     await expect(page.locator('text=Dashboard')).toBeVisible();
@@ -138,13 +138,13 @@ test.describe('Core Features E2E Tests', () => {
     await registerAndLoginAsUser(page, 'criador', 'Test Criador', testEmail);
 
     // Should already be on dashboard after login
-    await expect(page).toHaveURL(/\/dashboard-criador/);
+    await expect(page).toHaveURL(/\/dashboard\/creator/);
 
     // Check dashboard elements
     await expect(page.locator('text=Dashboard')).toBeVisible();
 
     // Check for criador-specific elements
-    const createContentButton = page.locator('a[href="/criar-conteudo"], button:has-text("Criar Conteúdo")');
+    const createContentButton = page.locator('a[href="/courses/create"], button:has-text("Criar Conteúdo")');
 
     if (await createContentButton.isVisible()) {
       await expect(createContentButton).toBeVisible();
@@ -155,7 +155,7 @@ test.describe('Core Features E2E Tests', () => {
     const testEmail = `aprendiz${Date.now()}@test.com`;
     await registerAndLoginAsUser(page, 'aprendiz', 'Test Aprendiz', testEmail);
 
-    await page.goto('/marketplace');
+    await page.goto('/courses');
 
     // Check for search input (adjust based on actual implementation)
     const searchInput = page.locator('input[placeholder*="pesquisar"], input[name="search"]');
@@ -173,7 +173,7 @@ test.describe('Core Features E2E Tests', () => {
     const testEmail = `aprendiz${Date.now()}@test.com`;
     await registerAndLoginAsUser(page, 'aprendiz', 'Test Aprendiz', testEmail);
 
-    await page.goto('/marketplace');
+    await page.goto('/courses');
 
     // Check for filter options (adjust based on actual implementation)
     const filterButtons = page.locator('button[data-filter], .filter-button');
@@ -195,7 +195,7 @@ test.describe('Core Features E2E Tests', () => {
     const testEmail = `aprendiz${Date.now()}@test.com`;
     await registerAndLoginAsUser(page, 'aprendiz', 'Test Aprendiz', testEmail);
 
-    await page.goto('/marketplace');
+    await page.goto('/courses');
 
     // Check for pagination controls
     const nextButton = page.locator('button:has-text("Próximo"), .pagination-next');

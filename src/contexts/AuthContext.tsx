@@ -16,8 +16,8 @@ interface AuthContextType {
   usuario: Usuario | null;           // Usuário atualmente logado (null se não logado)
   loading: boolean;                  // Indica se está carregando dados de autenticação
   error: Error | null;              // Último erro ocorrido
-  login: (email: string, senha: string) => Promise<boolean>;  // Função para fazer login
-  register: (dadosUsuario: Omit<Usuario, 'id' | 'pontos' | 'nivel' | 'dataCriacao'>) => Promise<boolean>; // Função para registrar
+  login: (email: string, senha: string) => Promise<Usuario | null>;  // Função para fazer login
+  register: (dadosUsuario: { nome: string; email: string; senha: string; tipo: 'criador' | 'aprendiz' }) => Promise<Usuario | null>; // Função para registrar
   logout: () => void;                // Função para fazer logout
   atualizarUsuario: (dadosAtualizados: Partial<Usuario>) => void; // Função para atualizar dados do usuário
   atualizarPontos: (novosPontos: number) => void; // Função para atualizar pontos do usuário
@@ -101,7 +101,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * @param senha - Senha do usuário
    * @returns Promise<boolean> - true se login foi bem-sucedido, false caso contrário
    */
-  const login = async (email: string, senha: string): Promise<boolean> => {
+  const login = async (email: string, senha: string): Promise<Usuario | null> => {
     return executeWithErrorHandling(async () => {
       setLoading(true);
       
@@ -118,19 +118,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             'AuthContext.login',
             { userId: usuarioLogado.id, userType: usuarioLogado.tipo }
           );
-          return true;
+          return usuarioLogado;
         } else {
           logger.warning(
             'Falha no login: credenciais inválidas',
             'AuthContext.login',
             { email }
           );
-          return false;
+          return null;
         }
       } finally {
         setLoading(false);
       }
-    }, 'login') ?? false;
+    }, 'login') ?? null;
   };
 
   /**
@@ -139,7 +139,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * @param dadosUsuario - Dados do usuário para registro
    * @returns Promise<boolean> - true se registro foi bem-sucedido, false caso contrário
    */
-  const register = async (dadosUsuario: Omit<Usuario, 'id' | 'pontos' | 'nivel' | 'dataCriacao'>): Promise<boolean> => {
+  const register = async (dadosUsuario: { nome: string; email: string; senha: string; tipo: 'criador' | 'aprendiz' }): Promise<Usuario | null> => {
     return executeWithErrorHandling(async () => {
       logger.info(
         'Tentativa de registro iniciada',
@@ -156,8 +156,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         'AuthContext.register',
         { userId: novoUsuario.id, userType: novoUsuario.tipo }
       );
-      return true;
-    }, 'register') ?? false;
+      return novoUsuario;
+    }, 'register') ?? null;
   };
 
   /**

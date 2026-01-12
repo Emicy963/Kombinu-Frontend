@@ -77,8 +77,8 @@ test.describe('Authentication E2E Tests', () => {
     // Fill registration form
     await page.fill('input[name="nome"]', 'Test User');
     await page.fill('input[name="email"]', `test${Date.now()}@example.com`);
-    await page.fill('input[name="senha"]', 'password123');
-    await page.fill('input[name="confirmarSenha"]', 'password123');
+    await page.fill('input[name="senha"]', 'K0mbinu_Test2026!');
+    await page.fill('input[name="confirmarSenha"]', 'K0mbinu_Test2026!');
 
     // Ensure aprendiz is selected (default)
     await expect(page.locator('button:has-text("Aprendiz")')).toHaveClass(/border-blue-500/);
@@ -87,7 +87,7 @@ test.describe('Authentication E2E Tests', () => {
     await page.click('button[type="submit"]:has-text("Criar conta")');
 
     // Should redirect to aprendiz dashboard
-    await expect(page).toHaveURL(/\/dashboard-aprendiz/);
+    await expect(page).toHaveURL(/\/dashboard\/learner/);
   });
 
   test('should register new user as criador', async ({ page }) => {
@@ -99,14 +99,14 @@ test.describe('Authentication E2E Tests', () => {
     // Fill registration form
     await page.fill('input[name="nome"]', 'Test Creator');
     await page.fill('input[name="email"]', `creator${Date.now()}@example.com`);
-    await page.fill('input[name="senha"]', 'password123');
-    await page.fill('input[name="confirmarSenha"]', 'password123');
+    await page.fill('input[name="senha"]', 'K0mbinu_Test2026!');
+    await page.fill('input[name="confirmarSenha"]', 'K0mbinu_Test2026!');
 
     // Submit form
     await page.click('button[type="submit"]:has-text("Criar conta")');
 
     // Should redirect to criador dashboard
-    await expect(page).toHaveURL(/\/dashboard-criador/);
+    await expect(page).toHaveURL(/\/dashboard\/creator/);
   });
 
   test('should show password validation errors', async ({ page }) => {
@@ -115,7 +115,7 @@ test.describe('Authentication E2E Tests', () => {
     // Fill form with mismatched passwords
     await page.fill('input[name="nome"]', 'Test User');
     await page.fill('input[name="email"]', `test${Date.now()}@example.com`);
-    await page.fill('input[name="senha"]', 'password123');
+    await page.fill('input[name="senha"]', 'K0mbinu_Test2026!');
     await page.fill('input[name="confirmarSenha"]', 'differentpassword');
 
     // Submit form

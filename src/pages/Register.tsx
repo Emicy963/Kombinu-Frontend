@@ -190,6 +190,7 @@ export default function Register() {
                   type="button"
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
                   onClick={() => setMostrarSenha(!mostrarSenha)}
+                  aria-label="Mostrar ou ocultar senha"
                 >
                   {mostrarSenha ? (
                     <EyeOff className="h-5 w-5 text-gray-400" />
@@ -222,6 +223,7 @@ export default function Register() {
                   type="button"
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
                   onClick={() => setMostrarConfirmarSenha(!mostrarConfirmarSenha)}
+                  aria-label="Mostrar ou ocultar senha"
                 >
                   {mostrarConfirmarSenha ? (
                     <EyeOff className="h-5 w-5 text-gray-400" />

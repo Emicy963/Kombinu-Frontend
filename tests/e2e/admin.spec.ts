@@ -7,12 +7,12 @@ async function loginAsAdmin(page: Page) {
   // Assumindo que as credenciais do admin são predefinidas
   // Em um cenário real, pode ser necessário criar um usuário admin primeiro
   await page.fill('input[name="email"]', 'admin@kombinu.com');
-  await page.fill('input[name="senha"]', 'admin123');
+  await page.fill('input[name="senha"]', 'K0mbinu_Admin2026!');
   await page.click('button[type="submit"]:has-text("Entrar")');
 
   // Verificar se foi redirecionado para o painel admin, pular teste se login falhar
   try {
-    await page.waitForURL(/\/admin/, { timeout: 5000 });
+    await page.waitForURL(/\/dashboard\/admin/, { timeout: 5000 });
   } catch {
     test.skip();
     return;
@@ -26,7 +26,7 @@ test.describe('Testes E2E do Painel Administrativo', () => {
     await loginAsAdmin(page);
 
     // Verificar se o painel admin carrega
-    await expect(page).toHaveURL(/\/admin/);
+    await expect(page).toHaveURL(/\/dashboard\/admin/);
     await expect(page.locator('body')).toBeVisible();
 
     // Verificar cabeçalho do painel admin
@@ -217,15 +217,15 @@ test.describe('Testes E2E do Painel Administrativo', () => {
     await page.goto('/register');
     await page.fill('input[name="nome"]', 'Test Aprendiz');
     await page.fill('input[name="email"]', testEmail);
-    await page.fill('input[name="senha"]', 'password123');
-    await page.fill('input[name="confirmarSenha"]', 'password123');
+    await page.fill('input[name="senha"]', 'K0mbinu_Test2026!');
+    await page.fill('input[name="confirmarSenha"]', 'K0mbinu_Test2026!');
     await page.click('button[type="submit"]:has-text("Criar conta")');
-    await page.waitForURL(/\/dashboard-aprendiz/);
+    await page.waitForURL(/\/dashboard\/learner/);
 
     // Tentar navegar para o painel admin
-    await page.goto('/admin');
+    await page.goto('/dashboard/admin');
 
     // Deve redirecionar para longe do painel admin (para dashboard apropriado ou login)
-    await expect(page).not.toHaveURL(/\/admin/);
+    await expect(page).not.toHaveURL(/\/dashboard\/admin/);
   });
 });
