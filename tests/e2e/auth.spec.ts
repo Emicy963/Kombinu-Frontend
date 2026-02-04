@@ -70,4 +70,75 @@ test.describe('Authentication E2E Tests', () => {
     // Note: This might not show errors if validation is client-side only
     // In a real scenario, you'd check for specific error text
   });
+
+  test('should register new user as aprendiz', async ({ page }) => {
+    await page.goto('/register');
+
+    // Fill registration form
+    await page.fill('input[name="nome"]', 'Test User');
+    await page.fill('input[name="email"]', `test${Date.now()}@example.com`);
+    await page.fill('input[name="senha"]', 'password123');
+    await page.fill('input[name="confirmarSenha"]', 'password123');
+
+    // Ensure aprendiz is selected (default)
+    await expect(page.locator('button:has-text("Aprendiz")')).toHaveClass(/border-blue-500/);
+
+    // Submit form
+    await page.click('button[type="submit"]:has-text("Criar conta")');
+
+    // Should redirect to aprendiz dashboard
+    await expect(page).toHaveURL(/\/dashboard-aprendiz/);
+  });
+
+  test('should register new user as criador', async ({ page }) => {
+    await page.goto('/register');
+
+    // Select criador role
+    await page.click('button:has-text("Criador")');
+
+    // Fill registration form
+    await page.fill('input[name="nome"]', 'Test Creator');
+    await page.fill('input[name="email"]', `creator${Date.now()}@example.com`);
+    await page.fill('input[name="senha"]', 'password123');
+    await page.fill('input[name="confirmarSenha"]', 'password123');
+
+    // Submit form
+    await page.click('button[type="submit"]:has-text("Criar conta")');
+
+    // Should redirect to criador dashboard
+    await expect(page).toHaveURL(/\/dashboard-criador/);
+  });
+
+  test('should show password validation errors', async ({ page }) => {
+    await page.goto('/register');
+
+    // Fill form with mismatched passwords
+    await page.fill('input[name="nome"]', 'Test User');
+    await page.fill('input[name="email"]', `test${Date.now()}@example.com`);
+    await page.fill('input[name="senha"]', 'password123');
+    await page.fill('input[name="confirmarSenha"]', 'differentpassword');
+
+    // Submit form
+    await page.click('button[type="submit"]:has-text("Criar conta")');
+
+    // Should show error message
+    await expect(page.locator('text=As senhas não coincidem')).toBeVisible();
+  });
+
+  test('should toggle password visibility', async ({ page }) => {
+    await page.goto('/login');
+
+    const passwordInput = page.locator('input[name="senha"]');
+
+    // Initially password should be hidden
+    await expect(passwordInput).toHaveAttribute('type', 'password');
+
+    // Click eye icon to show password
+    await page.click('button[aria-label*="senha"]');
+    await expect(passwordInput).toHaveAttribute('type', 'text');
+
+    // Click again to hide
+    await page.click('button[aria-label*="senha"]');
+    await expect(passwordInput).toHaveAttribute('type', 'password');
+  });
 });
