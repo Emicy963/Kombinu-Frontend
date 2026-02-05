@@ -1,0 +1,81 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - button "Toggle dark mode" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]
+  - banner [ref=e7]:
+    - generic [ref=e9]:
+      - link "Ir para página inicial do KOMBINU" [ref=e11] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e12]:
+          - img [ref=e14]
+          - generic [ref=e17]: KOMBINU
+      - navigation [ref=e18]:
+        - link "Dashboard" [ref=e19] [cursor=pointer]:
+          - /url: /dashboard-criador
+          - img [ref=e20]
+          - generic [ref=e23]: Dashboard
+        - link "Marketplace" [ref=e24] [cursor=pointer]:
+          - /url: /marketplace
+          - img [ref=e25]
+          - generic [ref=e28]: Marketplace
+        - link "Criar" [ref=e29] [cursor=pointer]:
+          - /url: /criar-conteudo
+          - img [ref=e30]
+          - generic [ref=e31]: Criar
+        - link "Ranking" [ref=e32] [cursor=pointer]:
+          - /url: /ranking
+          - img [ref=e33]
+          - generic [ref=e39]: Ranking
+      - generic [ref=e40]:
+        - generic [ref=e41]:
+          - generic [ref=e42]:
+            - paragraph [ref=e43]: Persistence Test
+            - generic [ref=e44]:
+              - generic [ref=e45]:
+                - img [ref=e46]
+                - generic [ref=e52]: "0"
+              - generic [ref=e53]: •
+              - generic [ref=e54]: Nível 1
+          - img [ref=e56]
+        - button "Sair da conta" [ref=e59] [cursor=pointer]:
+          - img [ref=e60]
+  - generic [ref=e64]:
+    - generic [ref=e65]:
+      - heading "Marketplace de Conteúdos" [level=1] [ref=e66]
+      - paragraph [ref=e67]: Descubra conteúdos incríveis criados pela comunidade KOMBINU
+    - generic [ref=e69]:
+      - generic [ref=e71]:
+        - img [ref=e72]
+        - textbox "Buscar conteúdos..." [ref=e75]
+      - combobox [ref=e77]:
+        - option "Todas as categorias" [selected]
+      - combobox [ref=e79]:
+        - option "Todos os tipos" [selected]
+        - option "Texto"
+        - option "Vídeo"
+        - option "Quiz"
+      - combobox [ref=e81]:
+        - option "Todas as dificuldades" [selected]
+        - option "Fácil"
+        - option "Médio"
+        - option "Difícil"
+    - paragraph [ref=e83]: 0 conteúdos encontrados
+    - generic [ref=e84]:
+      - img [ref=e85]
+      - heading "Nenhum conteúdo encontrado" [level=3] [ref=e88]
+      - paragraph [ref=e89]: Tente alterar os filtros ou criar novos conteúdos
+  - generic [ref=e92]:
+    - generic [ref=e93]:
+      - img [ref=e94]
+      - generic [ref=e103]: Debug Logs
+      - generic [ref=e104]: "21"
+    - generic [ref=e105]:
+      - button "Limpar logs" [ref=e106] [cursor=pointer]:
+        - img [ref=e107]
+      - button "Exportar logs" [ref=e110] [cursor=pointer]:
+        - img [ref=e111]
+      - button "Expandir" [ref=e114] [cursor=pointer]:
+        - img [ref=e115]
+```

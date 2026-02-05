@@ -1,0 +1,353 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - button "Toggle dark mode" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]
+  - generic [ref=e7]:
+    - banner [ref=e8]:
+      - generic [ref=e10]:
+        - link "Ir para página inicial do KOMBINU" [ref=e11]:
+          - /url: /
+          - generic [ref=e12]:
+            - img [ref=e14]
+            - generic [ref=e17]: KOMBINU
+        - generic [ref=e18]:
+          - button "Entrar" [ref=e19] [cursor=pointer]
+          - button "Começar Gratuitamente" [ref=e20] [cursor=pointer]
+    - generic [ref=e28]:
+      - generic [ref=e29]:
+        - img [ref=e30]
+        - generic [ref=e32]: Plataforma Líder em Educação Gamificada
+      - heading "Transforme Educação em Experiência" [level=1] [ref=e33]:
+        - text: Transforme
+        - text: Educação em Experiência
+      - paragraph [ref=e34]: A primeira plataforma de aprendizado gamificado de Angola. Conecte, aprenda e cresça numa comunidade nacional de conhecimento.
+      - generic [ref=e35]:
+        - button "Começar Gratuitamente" [ref=e36] [cursor=pointer]:
+          - img [ref=e37]
+          - text: Começar Gratuitamente
+        - button "Saber Mais" [ref=e39] [cursor=pointer]:
+          - text: Saber Mais
+          - img [ref=e40]
+      - generic [ref=e42]:
+        - generic [ref=e43]:
+          - img [ref=e44]
+          - generic [ref=e47]: "ODS 4: Educação de Qualidade"
+        - generic [ref=e48]:
+          - img [ref=e49]
+          - generic [ref=e54]: "ODS 10: Redução das Desigualdades"
+        - generic [ref=e55]:
+          - img [ref=e56]
+          - generic [ref=e60]: "ODS 8: Trabalho Decente"
+        - generic [ref=e61]:
+          - img [ref=e62]
+          - generic [ref=e65]: "ODS 17: Parcerias para os Objetivos"
+    - generic [ref=e67]:
+      - generic [ref=e68]:
+        - heading "Números que Falam por Si" [level=2] [ref=e69]
+        - paragraph [ref=e70]: A confiança de milhares de utilizadores em Angola
+      - generic [ref=e71]:
+        - generic [ref=e72]:
+          - img [ref=e74]
+          - generic [ref=e77]: 25K+
+          - generic [ref=e78]: Conteúdos Ativos
+        - generic [ref=e79]:
+          - img [ref=e81]
+          - generic [ref=e86]: 150K+
+          - generic [ref=e87]: Utilizadores Registados
+        - generic [ref=e88]:
+          - img [ref=e90]
+          - generic [ref=e96]: 500K+
+          - generic [ref=e97]: Quizzes Completados
+        - generic [ref=e98]:
+          - img [ref=e100]
+          - generic [ref=e103]: 95%
+          - generic [ref=e104]: Taxa de Satisfação
+    - generic [ref=e107]:
+      - generic [ref=e108]:
+        - heading "Sobre o KOMBINU" [level=2] [ref=e109]
+        - paragraph [ref=e110]: Somos pioneiros na criação de experiências educacionais gamificadas em Angola. A nossa missão é democratizar o acesso ao conhecimento através de tecnologia inovadora e metodologias comprovadas.
+        - generic [ref=e111]:
+          - generic [ref=e112]:
+            - img [ref=e113]
+            - generic [ref=e116]:
+              - heading "Metodologia Comprovada" [level=4] [ref=e117]
+              - paragraph [ref=e118]: Baseada em estudos da Universidade de Rochester sobre gamificação
+          - generic [ref=e119]:
+            - img [ref=e120]
+            - generic [ref=e123]:
+              - heading "Tecnologia Avançada" [level=4] [ref=e124]
+              - paragraph [ref=e125]: Learning Analytics e IA baseada em pesquisas do MIT
+          - generic [ref=e126]:
+            - img [ref=e127]
+            - generic [ref=e130]:
+              - heading "Comunidade Nacional" [level=4] [ref=e131]
+              - paragraph [ref=e132]: Conectando educadores e estudantes angolanos
+          - generic [ref=e133]:
+            - img [ref=e134]
+            - generic [ref=e137]:
+              - heading "Resultados Mensuráveis" [level=4] [ref=e138]
+              - paragraph [ref=e139]: Métricas baseadas em Learning Analytics comprovadas
+      - generic [ref=e141]:
+        - generic [ref=e142]:
+          - generic [ref=e143]:
+            - img [ref=e144]
+            - heading "Desktop" [level=4] [ref=e146]
+            - paragraph [ref=e147]: Experiência completa para criadores
+          - generic [ref=e148]:
+            - img [ref=e149]
+            - heading "Tablet" [level=4] [ref=e151]
+            - paragraph [ref=e152]: Perfeito para estudos interativos
+        - generic [ref=e153]:
+          - generic [ref=e154]:
+            - img [ref=e155]
+            - heading "Mobile" [level=4] [ref=e157]
+            - paragraph [ref=e158]: Aprenda em qualquer lugar
+          - generic [ref=e159]:
+            - img [ref=e160]
+            - heading "Multi-plataforma" [level=4] [ref=e163]
+            - paragraph [ref=e164]: Sincronização em tempo real
+    - generic [ref=e166]:
+      - generic [ref=e167]:
+        - heading "Funcionalidades Inovadoras" [level=2] [ref=e168]
+        - paragraph [ref=e169]: Tecnologia de ponta ao serviço da educação, criando experiências de aprendizado únicas e eficazes
+      - generic [ref=e170]:
+        - generic [ref=e171]:
+          - img [ref=e173]
+          - heading "Gamificação Inteligente" [level=3] [ref=e175]
+          - paragraph [ref=e176]: Sistema baseado em pesquisas neurocientíficas que aumenta a retenção de conhecimento em até 75% através de mecânicas de jogo comprovadas.
+          - generic [ref=e177]:
+            - generic [ref=e178]:
+              - img [ref=e179]
+              - generic [ref=e182]: Aumento de 75% na retenção
+            - generic [ref=e183]:
+              - img [ref=e184]
+              - generic [ref=e187]: Motivação intrínseca comprovada
+            - generic [ref=e188]:
+              - img [ref=e189]
+              - generic [ref=e192]: Dopamina e aprendizado
+        - generic [ref=e193]:
+          - img [ref=e195]
+          - heading "Comunidade Angolana" [level=3] [ref=e200]
+          - paragraph [ref=e201]: Plataforma que conecta aprendizes e educadores angolanos, promovendo o desenvolvimento educacional nacional através da colaboração.
+          - generic [ref=e202]:
+            - generic [ref=e203]:
+              - img [ref=e204]
+              - generic [ref=e207]: Rede nacional angolana
+            - generic [ref=e208]:
+              - img [ref=e209]
+              - generic [ref=e212]: Partilha de conhecimento
+            - generic [ref=e213]:
+              - img [ref=e214]
+              - generic [ref=e217]: Colaboração educacional
+        - generic [ref=e218]:
+          - img [ref=e220]
+          - heading "Aprendizado Personalizado" [level=3] [ref=e224]
+          - paragraph [ref=e225]: Algoritmos baseados em Learning Analytics que personalizam o conteúdo, aumentando a eficácia do aprendizado em 60% segundo estudos da MIT.
+          - generic [ref=e226]:
+            - generic [ref=e227]:
+              - img [ref=e228]
+              - generic [ref=e231]: 60% mais eficácia (MIT)
+            - generic [ref=e232]:
+              - img [ref=e233]
+              - generic [ref=e236]: Adaptação em tempo real
+            - generic [ref=e237]:
+              - img [ref=e238]
+              - generic [ref=e241]: IA educacional avançada
+    - generic [ref=e243]:
+      - generic [ref=e244]:
+        - heading "Validação Científica" [level=2] [ref=e245]
+        - paragraph [ref=e246]: Pesquisas e estudos que comprovam a eficácia da nossa abordagem
+      - generic [ref=e247]:
+        - generic [ref=e248]:
+          - generic [ref=e249]: 📊
+          - generic [ref=e250]: 90% + Engagement
+          - paragraph [ref=e251]: "\"Estudos demonstram que a gamificação aumenta o engagement dos estudantes em 90% e melhora os resultados de aprendizagem em 75%.\""
+          - generic [ref=e252]:
+            - heading "Eficácia da Gamificação" [level=4] [ref=e253]
+            - paragraph [ref=e254]: Universidade de Colorado (2019)
+        - generic [ref=e255]:
+          - generic [ref=e256]: 🎯
+          - generic [ref=e257]: 300% + Diversidade
+          - paragraph [ref=e258]: "\"Plataformas de marketplace educacional aumentam a diversidade de conteúdo em 300% e reduzem custos educacionais em 40%.\""
+          - generic [ref=e259]:
+            - heading "Marketplaces Educacionais" [level=4] [ref=e260]
+            - paragraph [ref=e261]: Journal of Educational Technology (2020)
+        - generic [ref=e262]:
+          - generic [ref=e263]: 🏆
+          - generic [ref=e264]: 85% + Motivação
+          - paragraph [ref=e265]: "\"Rankings educacionais aumentam a motivação competitiva saudável em 85% e melhoram a persistência nos estudos em 65%.\""
+          - generic [ref=e266]:
+            - heading "Sistemas de Ranking" [level=4] [ref=e267]
+            - paragraph [ref=e268]: Stanford Education Research (2021)
+    - generic [ref=e272]:
+      - img [ref=e274]
+      - heading "Junte-se à Revolução Educacional" [level=2] [ref=e277]
+      - paragraph [ref=e278]: Transforme a sua forma de aprender com o KOMBINU. Seja parte desta comunidade nacional de conhecimento e crescimento.
+      - generic [ref=e279]:
+        - button "Começar Gratuitamente" [ref=e280] [cursor=pointer]:
+          - img [ref=e281]
+          - text: Começar Gratuitamente
+        - button "Saber Mais" [ref=e284] [cursor=pointer]:
+          - text: Saber Mais
+          - img [ref=e285]
+      - generic [ref=e287]:
+        - generic [ref=e288]:
+          - img [ref=e289]
+          - generic [ref=e292]: Sem compromisso
+        - generic [ref=e293]:
+          - img [ref=e294]
+          - generic [ref=e297]: Cancelamento gratuito
+        - generic [ref=e298]:
+          - img [ref=e299]
+          - generic [ref=e302]: Suporte 24/7
+    - contentinfo [ref=e303]:
+      - generic [ref=e305]:
+        - generic [ref=e306]:
+          - generic [ref=e308]:
+            - img [ref=e310]
+            - generic [ref=e313]: KOMBINU
+          - paragraph [ref=e314]: Plataforma líder em educação gamificada para o mundo lusófono. Conectamos educadores e estudantes através de tecnologia inovadora e metodologias comprovadas.
+          - generic [ref=e315]:
+            - link "info@kombinu.com" [ref=e316]:
+              - /url: mailto:info@kombinu.com
+              - img [ref=e317]
+              - generic [ref=e320]: info@kombinu.com
+            - link "+351 21 000 0000" [ref=e321]:
+              - /url: tel:+351210000000
+              - img [ref=e322]
+              - generic [ref=e324]: +351 21 000 0000
+            - link "Lisboa, Portugal" [ref=e325]:
+              - /url: "#"
+              - img [ref=e326]
+              - generic [ref=e329]: Lisboa, Portugal
+          - generic [ref=e331]:
+            - generic [ref=e332]:
+              - img [ref=e333]
+              - generic [ref=e335]: ISO 27001
+            - generic [ref=e336]:
+              - img [ref=e337]
+              - generic [ref=e340]: GDPR Compliant
+          - generic [ref=e341]:
+            - link "Facebook" [ref=e342]:
+              - /url: "#"
+              - img [ref=e343]
+            - link "Twitter" [ref=e345]:
+              - /url: "#"
+              - img [ref=e346]
+            - link "Instagram" [ref=e348]:
+              - /url: "#"
+              - img [ref=e349]
+            - link "LinkedIn" [ref=e352]:
+              - /url: "#"
+              - img [ref=e353]
+        - generic [ref=e358]:
+          - generic [ref=e359]:
+            - heading "Produto" [level=3] [ref=e360]
+            - list [ref=e361]:
+              - listitem [ref=e362]:
+                - link "Funcionalidades" [ref=e363]:
+                  - /url: "#funcionalidades"
+                  - generic [ref=e364]: Funcionalidades
+              - listitem [ref=e365]:
+                - link "Para Educadores" [ref=e366]:
+                  - /url: "#educadores"
+                  - generic [ref=e367]: Para Educadores
+              - listitem [ref=e368]:
+                - link "Para Estudantes" [ref=e369]:
+                  - /url: "#estudantes"
+                  - generic [ref=e370]: Para Estudantes
+              - listitem [ref=e371]:
+                - link "Planos e Preços" [ref=e372]:
+                  - /url: "#precos"
+                  - generic [ref=e373]: Planos e Preços
+          - generic [ref=e374]:
+            - heading "Soluções" [level=3] [ref=e375]
+            - list [ref=e376]:
+              - listitem [ref=e377]:
+                - link "Ensino Superior" [ref=e378]:
+                  - /url: "#ensino-superior"
+                  - generic [ref=e379]: Ensino Superior
+              - listitem [ref=e380]:
+                - link "Formação Corporativa" [ref=e381]:
+                  - /url: "#corporativo"
+                  - generic [ref=e382]: Formação Corporativa
+              - listitem [ref=e383]:
+                - link "Escolas Secundárias" [ref=e384]:
+                  - /url: "#secundario"
+                  - generic [ref=e385]: Escolas Secundárias
+              - listitem [ref=e386]:
+                - link "Certificações" [ref=e387]:
+                  - /url: "#certificacoes"
+                  - generic [ref=e388]: Certificações
+          - generic [ref=e389]:
+            - heading "Suporte" [level=3] [ref=e390]
+            - list [ref=e391]:
+              - listitem [ref=e392]:
+                - link "Central de Ajuda" [ref=e393]:
+                  - /url: "#ajuda"
+                  - generic [ref=e394]: Central de Ajuda
+              - listitem [ref=e395]:
+                - link "Contacto" [ref=e396]:
+                  - /url: "#contacto"
+                  - generic [ref=e397]: Contacto
+              - listitem [ref=e398]:
+                - link "FAQ" [ref=e399]:
+                  - /url: "#faq"
+                  - generic [ref=e400]: FAQ
+              - listitem [ref=e401]:
+                - link "Estado do Sistema" [ref=e402]:
+                  - /url: "#status"
+                  - generic [ref=e403]: Estado do Sistema
+          - generic [ref=e404]:
+            - heading "Empresa" [level=3] [ref=e405]
+            - list [ref=e406]:
+              - listitem [ref=e407]:
+                - link "Sobre Nós" [ref=e408]:
+                  - /url: "#sobre"
+                  - generic [ref=e409]: Sobre Nós
+              - listitem [ref=e410]:
+                - link "Oportunidades" [ref=e411]:
+                  - /url: "#carreiras"
+                  - generic [ref=e412]: Oportunidades
+              - listitem [ref=e413]:
+                - link "Imprensa" [ref=e414]:
+                  - /url: "#imprensa"
+                  - generic [ref=e415]: Imprensa
+              - listitem [ref=e416]:
+                - link "Parcerias" [ref=e417]:
+                  - /url: "#parceiros"
+                  - generic [ref=e418]: Parcerias
+      - generic [ref=e421]:
+        - generic [ref=e422]:
+          - heading "Newsletter KOMBINU" [level=3] [ref=e423]
+          - paragraph [ref=e424]: Receba insights educacionais, novidades da plataforma e dicas exclusivas
+        - generic [ref=e425]:
+          - textbox "O seu melhor email" [ref=e426]
+          - button "Subscrever" [ref=e427] [cursor=pointer]
+      - generic [ref=e430]:
+        - generic [ref=e431]:
+          - generic [ref=e432]: © 2025 KOMBINU. Desenvolvido com
+          - img [ref=e433]
+          - generic [ref=e435]: para o mundo lusófono.
+        - generic [ref=e436]:
+          - link "Política de Privacidade" [ref=e437]:
+            - /url: "#privacidade"
+          - link "Termos de Uso" [ref=e438]:
+            - /url: "#termos"
+          - link "Política de Cookies" [ref=e439]:
+            - /url: "#cookies"
+  - generic [ref=e442]:
+    - generic [ref=e443]:
+      - img [ref=e444]
+      - generic [ref=e453]: Debug Logs
+      - generic [ref=e454]: "13"
+    - generic [ref=e455]:
+      - button "Limpar logs" [ref=e456] [cursor=pointer]:
+        - img [ref=e457]
+      - button "Exportar logs" [ref=e460] [cursor=pointer]:
+        - img [ref=e461]
+      - button "Expandir" [ref=e464] [cursor=pointer]:
+        - img [ref=e465]
+```

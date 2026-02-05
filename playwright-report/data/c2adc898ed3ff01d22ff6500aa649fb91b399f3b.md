@@ -1,0 +1,81 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - button "Toggle dark mode" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]
+  - generic [ref=e8]:
+    - generic [ref=e9]:
+      - link "KOMBINU" [ref=e10] [cursor=pointer]:
+        - /url: /
+        - img [ref=e12]
+        - generic [ref=e15]: KOMBINU
+      - heading "Crie sua conta" [level=2] [ref=e16]
+      - paragraph [ref=e17]: Junte-se à maior plataforma de aprendizado gamificado
+    - generic [ref=e18]:
+      - generic [ref=e19]:
+        - generic [ref=e20]: Como você quer usar o KOMBINU?
+        - generic [ref=e21]:
+          - button "Aprendiz Quero aprender e competir" [ref=e22] [cursor=pointer]:
+            - img [ref=e23]
+            - generic [ref=e27]: Aprendiz
+            - generic [ref=e28]: Quero aprender e competir
+          - button "Criador Quero criar conteúdos" [ref=e29] [cursor=pointer]:
+            - img [ref=e30]
+            - generic [ref=e33]: Criador
+            - generic [ref=e34]: Quero criar conteúdos
+      - generic [ref=e35]:
+        - generic [ref=e36]:
+          - generic [ref=e37]: Nome completo
+          - generic [ref=e38]:
+            - generic:
+              - img
+            - textbox "Nome completo" [ref=e39]:
+              - /placeholder: Seu nome completo
+              - text: Test Creator
+        - generic [ref=e40]:
+          - generic [ref=e41]: Email
+          - generic [ref=e42]:
+            - generic:
+              - img
+            - textbox "Email" [ref=e43]:
+              - /placeholder: seu@email.com
+              - text: creator1770288915339@example.com
+        - generic [ref=e44]:
+          - generic [ref=e45]: Senha
+          - generic [ref=e46]:
+            - generic:
+              - img
+            - textbox "Senha" [ref=e47]:
+              - /placeholder: Mínimo 6 caracteres
+              - text: password123
+            - button [ref=e48] [cursor=pointer]:
+              - img [ref=e49]
+        - generic [ref=e52]:
+          - generic [ref=e53]: Confirmar senha
+          - generic [ref=e54]:
+            - generic:
+              - img
+            - textbox "Confirmar senha" [active] [ref=e55]:
+              - /placeholder: Digite a senha novamente
+              - text: password123
+            - button [ref=e56] [cursor=pointer]:
+              - img [ref=e57]
+      - button "Criar conta" [ref=e61] [cursor=pointer]
+      - paragraph [ref=e63]:
+        - text: Já tem uma conta?
+        - link "Faça login" [ref=e64] [cursor=pointer]:
+          - /url: /login
+  - generic [ref=e67]:
+    - generic [ref=e68]:
+      - img [ref=e69]
+      - generic [ref=e81]: Debug Logs
+      - generic [ref=e82]: "13"
+    - generic [ref=e83]:
+      - button "Limpar logs" [ref=e84] [cursor=pointer]:
+        - img [ref=e85]
+      - button "Exportar logs" [ref=e91] [cursor=pointer]:
+        - img [ref=e92]
+      - button "Expandir" [ref=e96] [cursor=pointer]:
+        - img [ref=e97]
+```
