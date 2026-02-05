@@ -1,0 +1,148 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - button "Toggle dark mode" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]
+  - banner [ref=e7]:
+    - generic [ref=e9]:
+      - link "Ir para página inicial do KOMBINU" [ref=e11] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e12]:
+          - img [ref=e14]
+          - generic [ref=e17]: KOMBINU
+      - navigation [ref=e18]:
+        - link "Dashboard" [ref=e19] [cursor=pointer]:
+          - /url: /dashboard-aprendiz
+          - img [ref=e20]
+          - generic [ref=e23]: Dashboard
+        - link "Marketplace" [ref=e24] [cursor=pointer]:
+          - /url: /marketplace
+          - img [ref=e25]
+          - generic [ref=e28]: Marketplace
+        - link "Ranking" [ref=e29] [cursor=pointer]:
+          - /url: /ranking
+          - img [ref=e30]
+          - generic [ref=e37]: Ranking
+      - generic [ref=e38]:
+        - generic [ref=e39]:
+          - generic [ref=e40]:
+            - paragraph [ref=e41]: Test Aprendiz
+            - generic [ref=e42]:
+              - generic [ref=e43]:
+                - img [ref=e44]
+                - generic [ref=e51]: "0"
+              - generic [ref=e52]: •
+              - generic [ref=e53]: Nível 1
+          - img [ref=e55]
+        - button "Sair da conta" [ref=e58] [cursor=pointer]:
+          - img [ref=e59]
+  - generic [ref=e63]:
+    - banner [ref=e64]:
+      - generic [ref=e66]:
+        - link "Ir para página inicial do KOMBINU" [ref=e68] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e69]:
+            - img [ref=e71]
+            - generic [ref=e74]: KOMBINU
+        - navigation [ref=e75]:
+          - link "Dashboard" [ref=e76] [cursor=pointer]:
+            - /url: /dashboard-aprendiz
+            - img [ref=e77]
+            - generic [ref=e80]: Dashboard
+          - link "Marketplace" [ref=e81] [cursor=pointer]:
+            - /url: /marketplace
+            - img [ref=e82]
+            - generic [ref=e85]: Marketplace
+          - link "Ranking" [ref=e86] [cursor=pointer]:
+            - /url: /ranking
+            - img [ref=e87]
+            - generic [ref=e94]: Ranking
+        - generic [ref=e95]:
+          - generic [ref=e96]:
+            - generic [ref=e97]:
+              - paragraph [ref=e98]: Test Aprendiz
+              - generic [ref=e99]:
+                - generic [ref=e100]:
+                  - img [ref=e101]
+                  - generic [ref=e108]: "0"
+                - generic [ref=e109]: •
+                - generic [ref=e110]: Nível 1
+            - img [ref=e112]
+          - button "Sair da conta" [ref=e115] [cursor=pointer]:
+            - img [ref=e116]
+    - generic [ref=e120]:
+      - generic [ref=e121]:
+        - generic [ref=e122]:
+          - heading "Olá, Test Aprendiz! 🚀" [level=1] [ref=e123]
+          - paragraph [ref=e124]: Continue sua jornada de aprendizado e conquiste novos objetivos
+        - link "Explorar Conteúdos" [ref=e125] [cursor=pointer]:
+          - /url: /marketplace
+          - img [ref=e126]
+          - generic [ref=e129]: Explorar Conteúdos
+      - generic [ref=e130]:
+        - generic [ref=e132]:
+          - img [ref=e134]
+          - generic [ref=e141]:
+            - paragraph [ref=e142]: Nível
+            - paragraph [ref=e143]: "1"
+        - generic [ref=e145]:
+          - img [ref=e147]
+          - generic [ref=e149]:
+            - paragraph [ref=e150]: Pontos
+            - paragraph [ref=e151]: "0"
+        - generic [ref=e153]:
+          - img [ref=e155]
+          - generic [ref=e158]:
+            - paragraph [ref=e159]: Concluídos
+            - paragraph [ref=e160]: "0"
+        - generic [ref=e162]:
+          - img [ref=e164]
+          - generic [ref=e167]:
+            - paragraph [ref=e168]: Em Progresso
+            - paragraph [ref=e169]: "0"
+      - generic [ref=e170]:
+        - generic [ref=e171]:
+          - heading "Atividade Recente" [level=2] [ref=e173]
+          - generic [ref=e175]:
+            - img [ref=e176]
+            - heading "Comece sua jornada de aprendizado" [level=3] [ref=e179]
+            - paragraph [ref=e180]: Explore o marketplace e encontre conteúdos incríveis para aprender!
+            - link "Explorar Marketplace" [ref=e181] [cursor=pointer]:
+              - /url: /marketplace
+              - img [ref=e182]
+              - generic [ref=e185]: Explorar Marketplace
+        - generic [ref=e186]:
+          - generic [ref=e187]:
+            - generic [ref=e188]:
+              - img [ref=e190]
+              - heading "Próximo Nível" [level=3] [ref=e192]
+            - generic [ref=e193]:
+              - generic [ref=e194]:
+                - generic [ref=e195]: Nível 1
+                - generic [ref=e196]: Nível 2
+              - paragraph [ref=e198]: Faltam 1000 pontos para o próximo nível
+          - generic [ref=e199]:
+            - generic [ref=e200]:
+              - img [ref=e202]
+              - heading "Rankings" [level=3] [ref=e209]
+            - paragraph [ref=e210]: Veja sua posição nos rankings globais e compita com outros aprendizes!
+            - link "Ver Rankings" [ref=e211] [cursor=pointer]:
+              - /url: /ranking
+          - generic [ref=e212]:
+            - heading "💪 Frase do Dia" [level=3] [ref=e213]
+            - paragraph [ref=e214]: "\"O sucesso é a soma de pequenos esforços repetidos dia após dia.\""
+            - paragraph [ref=e215]: "- Robert Collier"
+  - generic [ref=e218]:
+    - generic [ref=e219]:
+      - img [ref=e220]
+      - generic [ref=e232]: Debug Logs
+      - generic [ref=e233]: "18"
+    - generic [ref=e234]:
+      - button "Limpar logs" [ref=e235] [cursor=pointer]:
+        - img [ref=e236]
+      - button "Exportar logs" [ref=e242] [cursor=pointer]:
+        - img [ref=e243]
+      - button "Expandir" [ref=e247] [cursor=pointer]:
+        - img [ref=e248]
+```
