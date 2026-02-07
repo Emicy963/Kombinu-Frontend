@@ -1,0 +1,50 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - button "Toggle dark mode" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]
+  - generic [ref=e8]:
+    - generic [ref=e9]:
+      - link "KOMBINU" [ref=e10] [cursor=pointer]:
+        - /url: /
+        - img [ref=e12]
+        - generic [ref=e15]: KOMBINU
+      - heading "Bem-vindo de volta!" [level=2] [ref=e16]
+      - paragraph [ref=e17]: Entre na sua conta e continue sua jornada de aprendizado
+    - generic [ref=e18]:
+      - generic [ref=e19]:
+        - generic [ref=e20]:
+          - generic [ref=e21]: Email
+          - generic [ref=e22]:
+            - generic:
+              - img
+            - textbox "Email" [ref=e23]:
+              - /placeholder: seu@email.com
+        - generic [ref=e24]:
+          - generic [ref=e25]: Senha
+          - generic [ref=e26]:
+            - generic:
+              - img
+            - textbox "Senha" [ref=e27]:
+              - /placeholder: Sua senha
+            - button [ref=e28] [cursor=pointer]:
+              - img [ref=e29]
+      - button "Entrar" [ref=e33] [cursor=pointer]
+      - paragraph [ref=e35]:
+        - text: Não tem uma conta?
+        - link "Cadastre-se gratuitamente" [ref=e36] [cursor=pointer]:
+          - /url: /register
+  - generic [ref=e39]:
+    - generic [ref=e40]:
+      - img [ref=e41]
+      - generic [ref=e50]: Debug Logs
+      - generic [ref=e51]: "13"
+    - generic [ref=e52]:
+      - button "Limpar logs" [ref=e53] [cursor=pointer]:
+        - img [ref=e54]
+      - button "Exportar logs" [ref=e57] [cursor=pointer]:
+        - img [ref=e58]
+      - button "Expandir" [ref=e61] [cursor=pointer]:
+        - img [ref=e62]
+```

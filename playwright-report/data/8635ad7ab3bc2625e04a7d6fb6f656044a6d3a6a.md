@@ -1,0 +1,86 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - button "Toggle dark mode" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]
+  - banner [ref=e7]:
+    - generic [ref=e9]:
+      - link "Ir para página inicial do KOMBINU" [ref=e11] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e12]:
+          - img [ref=e14]
+          - generic [ref=e17]: KOMBINU
+      - navigation [ref=e18]:
+        - link "Dashboard" [ref=e19] [cursor=pointer]:
+          - /url: /dashboard-aprendiz
+          - img [ref=e20]
+          - generic [ref=e23]: Dashboard
+        - link "Marketplace" [ref=e24] [cursor=pointer]:
+          - /url: /marketplace
+          - img [ref=e25]
+          - generic [ref=e28]: Marketplace
+        - link "Ranking" [ref=e29] [cursor=pointer]:
+          - /url: /ranking
+          - img [ref=e30]
+          - generic [ref=e36]: Ranking
+      - generic [ref=e37]:
+        - generic [ref=e38]:
+          - generic [ref=e39]:
+            - paragraph [ref=e40]: Test Aprendiz
+            - generic [ref=e41]:
+              - generic [ref=e42]:
+                - img [ref=e43]
+                - generic [ref=e49]: "0"
+              - generic [ref=e50]: •
+              - generic [ref=e51]: Nível 1
+          - img [ref=e53]
+        - button "Sair da conta" [ref=e56] [cursor=pointer]:
+          - img [ref=e57]
+  - generic [ref=e61]:
+    - generic [ref=e62]:
+      - heading "🏆 Rankings" [level=1] [ref=e63]
+      - paragraph [ref=e64]: Veja como você se compara com outros usuários
+    - generic [ref=e65]:
+      - generic [ref=e67]:
+        - img [ref=e68]
+        - generic [ref=e73]:
+          - paragraph [ref=e74]: Total de Usuários
+          - paragraph [ref=e75]: "0"
+      - generic [ref=e77]:
+        - img [ref=e78]
+        - generic [ref=e80]:
+          - paragraph [ref=e81]: Ativos (Semana)
+          - paragraph [ref=e82]: "0"
+      - generic [ref=e84]:
+        - img [ref=e85]
+        - generic [ref=e88]:
+          - paragraph [ref=e89]: Ativos (Mês)
+          - paragraph [ref=e90]: "0"
+    - generic [ref=e91]:
+      - button "Global" [ref=e92] [cursor=pointer]:
+        - img [ref=e93]
+        - generic [ref=e96]: Global
+      - button "Semanal" [ref=e97] [cursor=pointer]:
+        - img [ref=e98]
+        - generic [ref=e100]: Semanal
+      - button "Mensal" [ref=e101] [cursor=pointer]:
+        - img [ref=e102]
+        - generic [ref=e104]: Mensal
+    - generic [ref=e105]:
+      - img [ref=e106]
+      - heading "Nenhum ranking disponível" [level=3] [ref=e112]
+      - paragraph [ref=e113]: Complete alguns quizzes para aparecer no ranking!
+  - generic [ref=e116]:
+    - generic [ref=e117]:
+      - img [ref=e118]
+      - generic [ref=e127]: Debug Logs
+      - generic [ref=e128]: "23"
+    - generic [ref=e129]:
+      - button "Limpar logs" [ref=e130] [cursor=pointer]:
+        - img [ref=e131]
+      - button "Exportar logs" [ref=e134] [cursor=pointer]:
+        - img [ref=e135]
+      - button "Expandir" [ref=e138] [cursor=pointer]:
+        - img [ref=e139]
+```
