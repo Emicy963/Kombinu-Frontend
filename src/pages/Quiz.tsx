@@ -155,10 +155,10 @@ export default function Quiz() {
                 Voltar para Cursos
               </button>
               <button
-                onClick={() => window.location.reload()}
+                onClick={() => navigate('/ranking')}
                 className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-lg"
               >
-                Tentar Novamente
+                Ver Ranking Global
               </button>
             </div>
           </div>

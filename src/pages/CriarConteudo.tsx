@@ -11,7 +11,7 @@ export default function CriarConteudo() {
 
   const [titulo, setTitulo] = useState('');
   const [descricao, setDescricao] = useState('');
-  const [categoria, setCategoria] = useState('');
+  const [categoria, setCategoria] = useState('tecnologia');
   const [tipo, setTipo] = useState<'text' | 'video' | 'quiz'>('text');
   const [conteudo, setConteudo] = useState('');
   const [tempoEstimado, setTempoEstimado] = useState(15);
@@ -84,20 +84,15 @@ export default function CriarConteudo() {
         await contentService.create({
             title: titulo,
             description: descricao,
-            category: categoria || 'Geral',
+            category: categoria,
             thumbnail: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500', // Mock thumbnail
             level: dificuldade,
-            duration: `${tempoEstimado}h`, // Simplified for now
-            rating: 0,
-            students: 0,
-            price: 0, // Free for now
+            duration: `${tempoEstimado}h`,
             type: tipo,
             textContent: tipo === 'text' ? conteudo : undefined,
             videoUrl: tipo === 'video' ? conteudo : undefined,
-            quiz: tipo === 'quiz' ? quiz : undefined,
-            tags,
-            creatorName: usuario?.nome || 'Anônimo'
-        });
+            tags: tags.join(','), // Backend is expecting a CSV string
+        } as any);
         navigate('/dashboard/creator');
     } catch (error) {
         console.error("Failed to create content", error);
@@ -156,14 +151,16 @@ export default function CriarConteudo() {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Categoria
                 </label>
-                <input
-                  type="text"
+                <select
                   required
                   value={categoria}
                   onChange={(e) => setCategoria(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  placeholder="Ex: Tecnologia, Negócios, Idiomas"
-                />
+                >
+                  <option value="tecnologia">Tecnologia</option>
+                  <option value="negocios">Negócios</option>
+                  <option value="design">Design</option>
+                </select>
               </div>
 
               <div>
