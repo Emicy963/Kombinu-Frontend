@@ -124,14 +124,14 @@ export default function VisualizarConteudo() {
               </div>
 
                {/* Tags personalizadas */}
-               {conteudo.tags && conteudo.tags.length > 0 && (
+               {conteudo.tags && (typeof conteudo.tags === 'string' ? conteudo.tags.split(',') : Array.isArray(conteudo.tags) ? conteudo.tags : []).length > 0 && (
                  <div className="flex flex-wrap gap-2 mb-6">
-                   {conteudo.tags.map((tag, index) => (
+                   {(typeof conteudo.tags === 'string' ? conteudo.tags.split(',') : Array.isArray(conteudo.tags) ? conteudo.tags : []).map((tag, index) => tag.trim() && (
                      <span
                        key={index}
                        className="px-2 py-1 text-xs rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
                      >
-                       #{tag}
+                       #{tag.trim()}
                      </span>
                    ))}
                  </div>
@@ -215,35 +215,34 @@ export default function VisualizarConteudo() {
           ) : conteudo.type === 'video' ? (
             <div>
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Vídeo Aula</h2>
-              <div className="aspect-w-16 aspect-h-9 bg-gray-900 rounded-xl overflow-hidden flex items-center justify-center relative group cursor-pointer">
-                 {/* Placeholder for video player */}
-                 <div className="absolute inset-0 flex items-center justify-center">
-                    <Play className="w-20 h-20 text-white opacity-80 group-hover:opacity-100 transition-opacity" />
-                 </div>
-                 <img src={conteudo.thumbnail} alt={conteudo.title} className="w-full h-full object-cover opacity-50" />
-              </div>
-               <div className="mt-4 text-center">
-                 <p className="text-gray-500 dark:text-gray-400 text-sm">
-                    (Simulação de Vídeo Player - URL: {conteudo.videoUrl})
-                 </p>
-               </div>
+              {conteudo.videoUrl ? (
+                <div className="aspect-w-16 aspect-h-9 bg-gray-900 rounded-xl overflow-hidden flex items-center justify-center relative">
+                   {/* Player Real Simplificado */}
+                   <iframe 
+                      className="w-full h-[400px]" 
+                      src={conteudo.videoUrl.replace("watch?v=", "embed/")} 
+                      title={conteudo.title} 
+                      frameBorder="0" 
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                      allowFullScreen 
+                   ></iframe>
+                </div>
+              ) : (
+                <div className="aspect-w-16 aspect-h-9 bg-gray-900 rounded-xl overflow-hidden flex items-center justify-center relative group">
+                   <img src={conteudo.thumbnail} alt={conteudo.title} className="w-full h-full object-cover opacity-50" />
+                   <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <Play className="w-16 h-16 text-white opacity-80 mb-2" />
+                      <p className="text-white font-medium">Link do vídeo não disponível</p>
+                   </div>
+                </div>
+              )}
             </div>
           ) : (
             <div>
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Material de Leitura</h2>
               <div className="prose dark:prose-invert max-w-none">
-                <div className="whitespace-pre-wrap text-gray-700 dark:text-gray-300 leading-relaxed">
-                  {conteudo.textContent || conteudo.description}
-                  {/* Mock long content */}
-                  <br /><br />
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                  </p>
-                  <p>
-                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                  </p>
+                <div className="whitespace-pre-wrap text-gray-700 dark:text-gray-300 leading-relaxed bg-gray-50 dark:bg-gray-700/50 p-6 rounded-lg border border-gray-100 dark:border-gray-700">
+                  {conteudo.textContent || conteudo.description || "Nenhum material de texto detalhado foi fornecido pelo criador para esta aula."}
                 </div>
               </div>
             </div>

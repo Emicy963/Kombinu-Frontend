@@ -10,7 +10,7 @@ export default function Login() {
   const [erro, setErro] = useState('');
   const [carregando, setCarregando] = useState(false);
 
-  const { login } = useAuth();
+  const { login, usuario } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -19,13 +19,15 @@ export default function Login() {
     setErro('');
 
     try {
-      const sucesso = await login(email, senha);
-      if (sucesso) {
-        if (login.name === 'criador') {
-           navigate('/dashboard/creator');
+      const usuarioLogado = await login(email, senha);
+      if (usuarioLogado) {
+        // Redireciona baseado no tipo do usuário recém logado
+        if (usuarioLogado.tipo === 'criador') {
+          navigate('/dashboard/creator');
+        } else if (usuarioLogado.tipo === 'admin') {
+          navigate('/dashboard/admin');
         } else {
-           // Fallback default info
-           navigate('/dashboard/learner');
+          navigate('/dashboard/learner');
         }
       } else {
         setErro('Email ou senha incorretos');
@@ -103,6 +105,7 @@ export default function Login() {
                   type="button"
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
                   onClick={() => setMostrarSenha(!mostrarSenha)}
+                  aria-label="Mostrar ou ocultar senha"
                 >
                   {mostrarSenha ? (
                     <EyeOff className="h-5 w-5 text-gray-400" />

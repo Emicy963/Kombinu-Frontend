@@ -11,6 +11,7 @@ import Ranking from '../pages/Ranking';
 import CriarConteudo from '../pages/CriarConteudo';
 import VisualizarConteudo from '../pages/VisualizarConteudo';
 import PainelAdmin from '../pages/PainelAdmin';
+import ProtectedRoute from '../components/auth/ProtectedRoute';
 
 export const router = createBrowserRouter([
   {
@@ -34,15 +35,15 @@ export const router = createBrowserRouter([
         children: [
           {
             path: 'learner',
-            element: <DashboardAprendiz />,
+            element: <ProtectedRoute><DashboardAprendiz /></ProtectedRoute>,
           },
           {
             path: 'creator',
-            element: <DashboardCriador />,
+            element: <ProtectedRoute><DashboardCriador /></ProtectedRoute>,
           },
           {
             path: 'admin',
-            element: <PainelAdmin />,
+            element: <ProtectedRoute allowedRoles={['admin']}><PainelAdmin /></ProtectedRoute>,
           },
         ],
       },
@@ -55,21 +56,21 @@ export const router = createBrowserRouter([
           },
           {
             path: 'create',
-            element: <CriarConteudo />,
+            element: <ProtectedRoute><CriarConteudo /></ProtectedRoute>,
           },
           {
             path: ':id',
-            element: <VisualizarConteudo />,
+            element: <ProtectedRoute><VisualizarConteudo /></ProtectedRoute>,
           },
         ],
       },
       {
         path: 'quiz/:id',
-        element: <Quiz />,
+        element: <ProtectedRoute><Quiz /></ProtectedRoute>,
       },
       {
         path: 'ranking',
-        element: <Ranking />,
+        element: <ProtectedRoute><Ranking /></ProtectedRoute>,
       },
     ],
   },

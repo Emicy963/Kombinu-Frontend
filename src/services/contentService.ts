@@ -25,17 +25,20 @@ export interface Content {
   textContent?: string;
   quiz?: Question[];
   creatorName?: string;
+  creator?: { id: number | string; name: string };
   tags?: string[];
+  created_at?: string;
+  has_quiz?: boolean;
 }
 
 export const contentService = {
   getAll: async (): Promise<Content[]> => {
     try {
       const response = await api.get('/contents/');
-      // Map backend fields to frontend interface if necessary
-      // Assuming backend returns a list of contents matching the interface or close to it
-      // Helper to map backend format to frontend if strictly needed:
-      return response.data.map((item: any) => ({
+      // Lida com a paginação do DRF: os itens estão em response.data.results ou na raiz (se a view não for paginada)
+      const results = response.data.results ? response.data.results : response.data;
+      
+      return results.map((item: any) => ({
         ...item,
         // Ensure defaults for missing fields
         level: item.level || 'Iniciante',
@@ -46,6 +49,22 @@ export const contentService = {
     } catch (error) {
       console.error('Failed to fetch contents:', error);
       return []; 
+    }
+  },
+
+  getByCreator: async (creatorId: string | number): Promise<Content[]> => {
+    try {
+      const response = await api.get(`/contents/?creator=${creatorId}`);
+      return response.data.results.map((item: any) => ({
+        ...item,
+        level: item.level || 'Iniciante',
+        rating: item.rating || 0,
+        students: item.students || 0,
+        thumbnail: item.thumbnail || 'https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=500' 
+      }));
+    } catch (error) {
+      console.error(`Failed to fetch contents for creator ${creatorId}:`, error);
+      return [];
     }
   },
 

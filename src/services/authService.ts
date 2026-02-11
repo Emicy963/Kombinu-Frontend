@@ -3,13 +3,13 @@
  * Gerencia login, registro e operações relacionadas ao usuário via API
  */
 
-import axios from 'axios';
+import { api } from './api';
 import type { DadosLogin, DadosRegistro, Usuario } from '../types';
 import { logger } from '../utils/logger';
 import { storageService } from './storageService';
 
 // URLs da API based on Backend Routes
-const API_URL = '/api/auth';
+const API_URL = '/auth';
 
 /**
  * Classe para gerenciar autenticação de usuários
@@ -26,7 +26,7 @@ class AuthService {
 
       // 1. Obter Token (Login)
       // O backend espera 'email' e 'password'.
-      const loginResponse = await axios.post(`${API_URL}/login/`, {
+      const loginResponse = await api.post(`${API_URL}/login/`, {
         email: dadosLogin.email,
         password: dadosLogin.senha
       });
@@ -38,8 +38,8 @@ class AuthService {
       localStorage.setItem('accessToken', access_token);
       localStorage.setItem('refreshToken', refresh_token);
 
-      // Configurar header padrão para próximas requisições
-      axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
+      // Usar interceptor gerencia os proximos headers, mas podemos setar
+      api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
 
       // 2. Mapear resposta do backend para interface Usuario do frontend
       // O login já retorna os dados do usuário, não é necessário chamar /profile
@@ -95,7 +95,7 @@ class AuthService {
         // username é setado automaticamente como email no serializer do backend
       };
 
-      await axios.post(`${API_URL}/register/`, payload);
+      await api.post(`${API_URL}/register/`, payload);
 
       // Após registro, faz login automático para pegar o token
       const usuarioLogado = await this.login({
@@ -122,7 +122,7 @@ class AuthService {
     storageService.removerUsuario();
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
-    delete axios.defaults.headers.common['Authorization'];
+    delete api.defaults.headers.common['Authorization'];
     logger.info('Logout executado com sucesso', 'AuthService.logout');
   }
 
@@ -148,7 +148,7 @@ class AuthService {
     
     if (usuario && token) {
        // Restaurar header
-       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
        return usuario;
     }
     return null;

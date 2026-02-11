@@ -159,27 +159,43 @@ export default function Ranking() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Mock data fetching
     const fetchRanking = async () => {
         setLoading(true);
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 800));
-
-        const mockData: RankingUser[] = [
-            { id: '1', name: 'Ana Silva', points: 2500, trend: 'up' },
-            { id: '2', name: 'Carlos Souza', points: 2350, trend: 'same' },
-            { id: '3', name: 'Beatriz Oliveira', points: 2100, trend: 'down' },
-            { id: '4', name: 'João Pereira', points: 1950, trend: 'up' },
-            { id: '5', name: 'Maria Costa', points: 1800, trend: 'same' },
-             // Add current user if not in top 5 for demo purposes
-             ...(usuario ? [{ id: usuario.id, name: usuario.nome, points: usuario.pontos, trend: 'same' as const }] : [])
-        ].sort((a, b) => b.points - a.points).slice(0, 10); // Keep top 10
-
-        // Remove duplicate if user was added and already in top list (simple logic for mock)
-         const uniqueData = mockData.filter((v,i,a)=>a.findIndex(t=>(t.id === v.id))===i);
-
-        setRankingData(uniqueData);
-        setLoading(false);
+        try {
+          const { api } = await import('../services/api');
+          const response = await api.get('/rankings/global/');
+          // response.data shape is { top_users: [...], user_position: {...} }
+          
+          if (response.data && Array.isArray(response.data.top_users)) {
+             const realData: RankingUser[] = response.data.top_users.map((u: any, i: number) => ({
+                 id: String(u.user_id),
+                 name: u.email.split('@')[0], // Fallback se não vier o nome
+                 points: u.total_score,
+                 trend: 'same', // Simplificação para esta versão
+                 avatar: undefined
+             }));
+             
+             // Se o user estiver logado e tiver user_position, mas NÃO estiver nos top users mostrados, adicionamos no final manual
+             if (usuario && response.data.user_position && !realData.find(x => x.id === usuario.id)) {
+                 realData.push({
+                     id: usuario.id,
+                     name: usuario.nome,
+                     points: response.data.user_position.total_score,
+                     trend: 'same'
+                 });
+             }
+             
+             setRankingData(realData);
+          } else {
+             // Fallback local state se der erro de contrato
+             setRankingData([]);
+          }
+        } catch (error) {
+           console.error("Erro ao buscar ranking global", error);
+           setRankingData([]);
+        } finally {
+            setLoading(false);
+        }
     };
 
     fetchRanking();

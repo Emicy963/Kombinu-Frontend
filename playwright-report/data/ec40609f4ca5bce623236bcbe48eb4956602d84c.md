@@ -1,0 +1,173 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - main [ref=e4]:
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - link "KOMBINU" [ref=e8] [cursor=pointer]:
+          - /url: /
+          - img [ref=e10]
+          - generic [ref=e13]: KOMBINU
+        - heading "Bem-vindo de volta!" [level=2] [ref=e14]
+        - paragraph [ref=e15]: Entre na sua conta e continue sua jornada de aprendizado
+      - generic [ref=e16]:
+        - generic [ref=e17]:
+          - generic [ref=e18]:
+            - generic [ref=e19]: Email
+            - generic [ref=e20]:
+              - generic:
+                - img
+              - textbox "Email" [ref=e21]:
+                - /placeholder: seu@email.com
+          - generic [ref=e22]:
+            - generic [ref=e23]: Senha
+            - generic [ref=e24]:
+              - generic:
+                - img
+              - textbox "Senha" [ref=e25]:
+                - /placeholder: Sua senha
+              - button "Mostrar ou ocultar senha" [ref=e26] [cursor=pointer]:
+                - img [ref=e27]
+        - button "Entrar" [ref=e31] [cursor=pointer]
+        - paragraph [ref=e33]:
+          - text: Não tem uma conta?
+          - link "Cadastre-se gratuitamente" [ref=e34] [cursor=pointer]:
+            - /url: /register
+  - contentinfo [ref=e35]:
+    - generic [ref=e37]:
+      - generic [ref=e38]:
+        - generic [ref=e40]:
+          - img [ref=e42]
+          - generic [ref=e45]: KOMBINU
+        - paragraph [ref=e46]: Plataforma líder em educação gamificada para o mundo lusófono. Conectamos educadores e estudantes através de tecnologia inovadora e metodologias comprovadas.
+        - generic [ref=e47]:
+          - link "info@kombinu.com" [ref=e48] [cursor=pointer]:
+            - /url: mailto:info@kombinu.com
+            - img [ref=e49]
+            - generic [ref=e52]: info@kombinu.com
+          - link "+351 21 000 0000" [ref=e53] [cursor=pointer]:
+            - /url: tel:+351210000000
+            - img [ref=e54]
+            - generic [ref=e56]: +351 21 000 0000
+          - link "Lisboa, Portugal" [ref=e57] [cursor=pointer]:
+            - /url: "#"
+            - img [ref=e58]
+            - generic [ref=e61]: Lisboa, Portugal
+        - generic [ref=e63]:
+          - generic [ref=e64]:
+            - img [ref=e65]
+            - generic [ref=e67]: ISO 27001
+          - generic [ref=e68]:
+            - img [ref=e69]
+            - generic [ref=e72]: GDPR Compliant
+        - generic [ref=e73]:
+          - link "Facebook" [ref=e74] [cursor=pointer]:
+            - /url: "#"
+            - img [ref=e75]
+          - link "Twitter" [ref=e77] [cursor=pointer]:
+            - /url: "#"
+            - img [ref=e78]
+          - link "Instagram" [ref=e80] [cursor=pointer]:
+            - /url: "#"
+            - img [ref=e81]
+          - link "LinkedIn" [ref=e84] [cursor=pointer]:
+            - /url: "#"
+            - img [ref=e85]
+      - generic [ref=e90]:
+        - generic [ref=e91]:
+          - heading "Produto" [level=3] [ref=e92]
+          - list [ref=e93]:
+            - listitem [ref=e94]:
+              - link "Funcionalidades" [ref=e95] [cursor=pointer]:
+                - /url: "#funcionalidades"
+                - generic [ref=e96]: Funcionalidades
+            - listitem [ref=e97]:
+              - link "Para Educadores" [ref=e98] [cursor=pointer]:
+                - /url: "#educadores"
+                - generic [ref=e99]: Para Educadores
+            - listitem [ref=e100]:
+              - link "Para Estudantes" [ref=e101] [cursor=pointer]:
+                - /url: "#estudantes"
+                - generic [ref=e102]: Para Estudantes
+            - listitem [ref=e103]:
+              - link "Planos e Preços" [ref=e104] [cursor=pointer]:
+                - /url: "#precos"
+                - generic [ref=e105]: Planos e Preços
+        - generic [ref=e106]:
+          - heading "Soluções" [level=3] [ref=e107]
+          - list [ref=e108]:
+            - listitem [ref=e109]:
+              - link "Ensino Superior" [ref=e110] [cursor=pointer]:
+                - /url: "#ensino-superior"
+                - generic [ref=e111]: Ensino Superior
+            - listitem [ref=e112]:
+              - link "Formação Corporativa" [ref=e113] [cursor=pointer]:
+                - /url: "#corporativo"
+                - generic [ref=e114]: Formação Corporativa
+            - listitem [ref=e115]:
+              - link "Escolas Secundárias" [ref=e116] [cursor=pointer]:
+                - /url: "#secundario"
+                - generic [ref=e117]: Escolas Secundárias
+            - listitem [ref=e118]:
+              - link "Certificações" [ref=e119] [cursor=pointer]:
+                - /url: "#certificacoes"
+                - generic [ref=e120]: Certificações
+        - generic [ref=e121]:
+          - heading "Suporte" [level=3] [ref=e122]
+          - list [ref=e123]:
+            - listitem [ref=e124]:
+              - link "Central de Ajuda" [ref=e125] [cursor=pointer]:
+                - /url: "#ajuda"
+                - generic [ref=e126]: Central de Ajuda
+            - listitem [ref=e127]:
+              - link "Contacto" [ref=e128] [cursor=pointer]:
+                - /url: "#contacto"
+                - generic [ref=e129]: Contacto
+            - listitem [ref=e130]:
+              - link "FAQ" [ref=e131] [cursor=pointer]:
+                - /url: "#faq"
+                - generic [ref=e132]: FAQ
+            - listitem [ref=e133]:
+              - link "Estado do Sistema" [ref=e134] [cursor=pointer]:
+                - /url: "#status"
+                - generic [ref=e135]: Estado do Sistema
+        - generic [ref=e136]:
+          - heading "Empresa" [level=3] [ref=e137]
+          - list [ref=e138]:
+            - listitem [ref=e139]:
+              - link "Sobre Nós" [ref=e140] [cursor=pointer]:
+                - /url: "#sobre"
+                - generic [ref=e141]: Sobre Nós
+            - listitem [ref=e142]:
+              - link "Oportunidades" [ref=e143] [cursor=pointer]:
+                - /url: "#carreiras"
+                - generic [ref=e144]: Oportunidades
+            - listitem [ref=e145]:
+              - link "Imprensa" [ref=e146] [cursor=pointer]:
+                - /url: "#imprensa"
+                - generic [ref=e147]: Imprensa
+            - listitem [ref=e148]:
+              - link "Parcerias" [ref=e149] [cursor=pointer]:
+                - /url: "#parceiros"
+                - generic [ref=e150]: Parcerias
+    - generic [ref=e153]:
+      - generic [ref=e154]:
+        - heading "Newsletter KOMBINU" [level=3] [ref=e155]
+        - paragraph [ref=e156]: Receba insights educacionais, novidades da plataforma e dicas exclusivas
+      - generic [ref=e157]:
+        - textbox "O seu melhor email" [ref=e158]
+        - button "Subscrever" [ref=e159] [cursor=pointer]
+    - generic [ref=e162]:
+      - generic [ref=e163]:
+        - generic [ref=e164]: © 2025 KOMBINU. Desenvolvido com
+        - img [ref=e165]
+        - generic [ref=e167]: para o mundo lusófono.
+      - generic [ref=e168]:
+        - link "Política de Privacidade" [ref=e169] [cursor=pointer]:
+          - /url: "#privacidade"
+        - link "Termos de Uso" [ref=e170] [cursor=pointer]:
+          - /url: "#termos"
+        - link "Política de Cookies" [ref=e171] [cursor=pointer]:
+          - /url: "#cookies"
+```

@@ -1,32 +1,53 @@
+import React, { useState, useEffect } from 'react';
 import { BookOpen, Calendar, Eye, Heart, Plus, Star, TrendingUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Header } from '../components/layout/Header';
 import { useAuth } from '../contexts/AuthContext';
-// import { useData } from '../contexts/DataContext';
+import { dashboardService } from '../services/dashboardService';
+import { contentService, Content } from '../services/contentService';
 
 export default function DashboardCriador() {
   const { usuario } = useAuth();
-  // const { obterConteudosPorCriador } = useData();
+  const [meusConteudos, setMeusConteudos] = useState<Content[]>([]);
+  const [stats, setStats] = useState({
+    totalStudents: 0,
+    totalCourses: 0,
+    averageRating: 0,
+    totalRevenue: 0
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!usuario?.id) return;
+      try {
+        setLoading(true);
+        const [statsData, contentsData] = await Promise.all([
+          dashboardService.getCreatorStats(),
+          contentService.getByCreator(usuario.id)
+        ]);
+        setStats(statsData);
+        setMeusConteudos(contentsData);
+      } catch (error) {
+        console.error("Erro ao carregar dashboard:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [usuario?.id]);
   
-  // const meusConteudos = obterConteudosPorCriador(usuario?.id || '');
-  
-  // Mock data for now until we connect to real backend for contents
-  const meusConteudos = [
-    {
-      id: '1',
-      titulo: 'Introdução ao Marketing Digital',
-      descricao: 'Aprenda os fundamentos do marketing digital e como aplicá-los.',
-      visualizacoes: 1250,
-      likes: 45,
-      publico: true,
-      tipo: 'conteudo',
-      dataCriacao: new Date().toISOString()
-    }
-  ];
-  
-  const totalVisualizacoes = meusConteudos.reduce((total, conteudo) => total + conteudo.visualizacoes, 0);
-  const totalLikes = meusConteudos.reduce((total, conteudo) => total + conteudo.likes, 0);
-  const conteudosPublicos = meusConteudos.filter(c => c.publico).length;
+  const totalVisualizacoes = stats.totalStudents;
+  const totalLikes = 0;
+  const conteudosPublicos = meusConteudos.length;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
@@ -135,38 +156,34 @@ export default function DashboardCriador() {
                       <div className="flex-1">
                         <div className="flex items-center space-x-2 mb-2">
                           <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-                            {conteudo.titulo}
+                            {conteudo.title}
                           </h3>
-                          <span className={`px-2 py-1 text-xs rounded-full ${
-                            conteudo.publico 
-                              ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' 
-                              : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
-                          }`}>
-                            {conteudo.publico ? 'Público' : 'Rascunho'}
+                          <span className={`px-2 py-1 text-xs rounded-full bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400`}>
+                            Público
                           </span>
                           <span className={`px-2 py-1 text-xs rounded-full ${
-                            conteudo.tipo === 'quiz' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' : 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400'
+                            conteudo.has_quiz ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' : 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400'
                           }`}>
-                            {conteudo.tipo === 'quiz' ? 'Quiz' : 'Conteúdo'}
+                            {conteudo.has_quiz ? 'Quiz' : 'Conteúdo'}
                           </span>
                         </div>
                         
                         <p className="text-gray-600 dark:text-gray-400 text-sm mb-3 line-clamp-2">
-                          {conteudo.descricao}
+                          {conteudo.description}
                         </p>
                         
                         <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-500">
                           <div className="flex items-center space-x-1">
                             <Eye className="w-4 h-4" />
-                            <span>{conteudo.visualizacoes}</span>
+                            <span>{conteudo.students || 0}</span>
                           </div>
                           <div className="flex items-center space-x-1">
                             <Heart className="w-4 h-4" />
-                            <span>{conteudo.likes}</span>
+                            <span>{conteudo.rating || 0}</span>
                           </div>
                           <div className="flex items-center space-x-1">
                             <Calendar className="w-4 h-4" />
-                            <span>{new Date(conteudo.dataCriacao).toLocaleDateString()}</span>
+                            <span>{new Date(conteudo.created_at || new Date()).toLocaleDateString()}</span>
                           </div>
                         </div>
                       </div>
