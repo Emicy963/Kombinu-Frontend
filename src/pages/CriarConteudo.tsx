@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { quizService } from '../services/quizService';
 import { Header } from '../components/layout/Header';
 import { useAuth } from '../contexts/AuthContext';
 import { contentService } from '../services/contentService';
-import { Save, Plus, Trash2, BookOpen, Video, FileText, Clock, Target, Tag } from 'lucide-react';
+import { Save, Plus, Trash2, BookOpen, Video, FileText, Clock, Target, Tag, Cpu } from 'lucide-react';
 
 export default function CriarConteudo() {
   const { usuario } = useAuth();
   const navigate = useNavigate();
+  const [gerandoIA, setGerandoIA] = useState(false);
 
   const [titulo, setTitulo] = useState('');
   const [descricao, setDescricao] = useState('');
@@ -69,6 +71,24 @@ export default function CriarConteudo() {
 
   const removerTag = (tagParaRemover: string) => {
     setTags(tags.filter(tag => tag !== tagParaRemover));
+  };
+
+  const gerarQuizIA = async () => {
+    try {
+       setGerandoIA(true);
+       // Como OpenTDB no backend usa gerar quiz para UM conteudo existente (id), 
+       // para o escopo do form local vamos simplificar com uma rota customizada ou mock. 
+       // Como o MVP foca na integração: 
+       // O endpoint correto do backend exige um content_id (ex: /api/quizzes/contents/<id>/generate-quiz/).
+       // Nós ainda não gravámos o conteúdo. Para permitir gerar o quiz "na criação", faríamos o generate via um helper ou salvaríamos o conteúdo primeiro.
+       
+       alert("Gravação de Quiz Automático no MVP: Crie o conteúdo como tipo 'Texto' ou 'Vídeo' e depois a opção 'Gerar Quiz' estará disponível no Dashboard!");
+    } catch (error) {
+       console.error("Erro ao gerar quiz IA", error);
+       alert("Ocorreu um erro ao conectar com o serviço de IA.");
+    } finally {
+       setGerandoIA(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -284,11 +304,23 @@ export default function CriarConteudo() {
             </div>
           </div>
 
-          {/* Conteúdo Específico */}
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-              {tipo === 'quiz' ? 'Perguntas do Quiz' : 'Conteúdo'}
-            </h2>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                {tipo === 'quiz' ? 'Perguntas do Quiz' : 'Conteúdo'}
+              </h2>
+              {tipo === 'quiz' && (
+                <button
+                  type="button"
+                  onClick={gerarQuizIA}
+                  disabled={gerandoIA}
+                  className="bg-purple-100 text-purple-700 hover:bg-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:hover:bg-purple-900/50 px-4 py-2 rounded-lg font-medium text-sm flex items-center space-x-2 transition-colors disabled:opacity-50"
+                >
+                  <Cpu className="w-4 h-4" />
+                  <span>{gerandoIA ? 'Gerando...' : 'Gerar com Inteligência Artificial'}</span>
+                </button>
+              )}
+            </div>
             
             {tipo !== 'quiz' ? (
               <div>

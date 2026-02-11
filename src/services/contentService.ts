@@ -35,10 +35,10 @@ export const contentService = {
   getAll: async (): Promise<Content[]> => {
     try {
       const response = await api.get('/contents/');
-      // Map backend fields to frontend interface if necessary
-      // Assuming backend returns a list of contents matching the interface or close to it
-      // Helper to map backend format to frontend if strictly needed:
-      return response.data.map((item: any) => ({
+      // Lida com a paginação do DRF: os itens estão em response.data.results ou na raiz (se a view não for paginada)
+      const results = response.data.results ? response.data.results : response.data;
+      
+      return results.map((item: any) => ({
         ...item,
         // Ensure defaults for missing fields
         level: item.level || 'Iniciante',

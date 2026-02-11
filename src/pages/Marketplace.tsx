@@ -19,9 +19,9 @@ export default function Marketplace() {
     const fetchData = async () => {
       try {
         const data = await contentService.getAll();
-        setContents(data);
+        setContents(Array.isArray(data) ? data : []);
         const cats = await contentService.getCategories();
-        setCategories(['Todos', ...cats]); // Add 'Todos' option
+        setCategories(['Todos', ...(Array.isArray(cats) ? cats : [])]); // Add 'Todos' option
       } catch (error) {
         console.error("Failed to fetch content", error);
       } finally {
@@ -138,7 +138,7 @@ export default function Marketplace() {
 
                 <div className="mt-auto flex items-center justify-between">
                   <span className="font-montserrat font-bold text-lg text-green-600 dark:text-green-400">
-                    {conteudo.price === 0 ? 'Gratuito' : `Kz ${conteudo.price.toLocaleString()}`}
+                    {(conteudo.price || 0) === 0 ? 'Gratuito' : `Kz ${(conteudo.price || 0).toLocaleString()}`}
                   </span>
                   <Link 
                     to={`/courses/${conteudo.id}`}
