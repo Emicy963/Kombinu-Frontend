@@ -6,6 +6,14 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ---
 
+## [1.2.1] - Criar um Ficheiro  `vercel.json` para Configurações de Deploy (Março 2026)
+
+### ✨ Adicionado
+
+- Ficheiro `vercel.json` criado para configurar o comportamento de deploy no Vercel, incluindo:
+  - Redirecionamentos e rewrites para SPA
+  - Variáveis de ambiente para produção
+
 ## [1.2.0] - Funcionalidades Finais do MVP (Março 2026)
 
 ### ✨ Adicionado
