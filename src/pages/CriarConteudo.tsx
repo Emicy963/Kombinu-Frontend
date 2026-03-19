@@ -101,7 +101,7 @@ export default function CriarConteudo() {
     }
 
     try {
-        await contentService.create({
+        const createdContent = await contentService.create({
             title: titulo,
             description: descricao,
             category: categoria,
@@ -113,6 +113,11 @@ export default function CriarConteudo() {
             videoUrl: tipo === 'video' ? conteudo : undefined,
             tags: tags.join(','), // Backend is expecting a CSV string
         } as any);
+
+        if (tipo === 'quiz') {
+            await quizService.createManualQuiz(createdContent.id, quiz);
+        }
+
         navigate('/dashboard/creator');
     } catch (error) {
         console.error("Failed to create content", error);

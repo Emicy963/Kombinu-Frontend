@@ -6,6 +6,21 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ---
 
+## [1.2.2] - Correções Adicionais do MVP (Março 2026)
+
+### ✨ Adicionado
+
+- Rodapé (Footer) atualizado com dados de contacto reais da Kombinu (Email, Telefone, e Localização em Angola).
+- Formulário de subscrição da newsletter no frontend funcional e redigido corretamente para o novo e-mail da Kombinu.
+
+### 🐛 Corrigido:
+
+- Implementação end-to-end do fluxo de Criação Manual de Quizzes sem uso de IA, permitindo aos criadores submeterem perguntas digitadas manualmente para os servidores.
+- Player de Quizzes consertado:
+  - Resolvido Erro 500 no carregamento inicial devido a URLs e Lookup Fields descompassados no backend.
+  - Sincronização de propriedades (ID vs PK) no modelo frontend-backend para resolver problemas visuais (temporizador `NaN` e inputs radio marcando todos simultaneamente).
+  - Ajuste no envio de respostas do Quiz para garantir pontuação fiel ao modelo do backend.
+
 ## [1.2.1] - Criar um Ficheiro  `vercel.json` para Configurações de Deploy (Março 2026)
 
 ### ✨ Adicionado

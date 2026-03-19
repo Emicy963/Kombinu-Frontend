@@ -29,6 +29,7 @@ export interface Content {
   tags?: string[];
   created_at?: string;
   has_quiz?: boolean;
+  quiz_id?: string;
 }
 
 export const contentService = {
