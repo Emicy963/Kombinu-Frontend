@@ -5,6 +5,7 @@ import { Header } from '../components/layout/Header';
 import { useAuth } from '../contexts/AuthContext';
 import { dashboardService } from '../services/dashboardService';
 import { contentService, Content } from '../services/contentService';
+import { quizService } from '../services/quizService';
 
 export default function DashboardCriador() {
   const { usuario } = useAuth();
@@ -16,6 +17,23 @@ export default function DashboardCriador() {
     totalRevenue: 0
   });
   const [loading, setLoading] = useState(true);
+  const [gerandoQuizId, setGerandoQuizId] = useState<string | null>(null);
+
+  const handleGerarQuiz = async (contentId: string) => {
+    try {
+      setGerandoQuizId(contentId);
+      await quizService.generateQuiz(contentId);
+      alert('Quiz gerado com sucesso pelo agente IA OpenDB!');
+      // Atualizar a lista de conteúdos
+      const contentsData = await contentService.getByCreator(usuario!.id);
+      setMeusConteudos(contentsData);
+    } catch (error) {
+      console.error(error);
+      alert('Erro ao gerar quiz. Algum problema com a integração OpenDB ou o conteúdo já possui quiz.');
+    } finally {
+      setGerandoQuizId(null);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -188,7 +206,16 @@ export default function DashboardCriador() {
                         </div>
                       </div>
                       
-                      <div className="flex items-center space-x-2 ml-4">
+                      <div className="flex items-center space-x-4 ml-4">
+                        {!conteudo.has_quiz && conteudo.type !== 'quiz' && (
+                          <button
+                            onClick={() => handleGerarQuiz(conteudo.id)}
+                            disabled={gerandoQuizId === conteudo.id}
+                            className="bg-purple-100 text-purple-700 hover:bg-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:hover:bg-purple-900/50 px-3 py-1.5 rounded-lg font-medium text-xs flex items-center transition-colors disabled:opacity-50"
+                          >
+                            {gerandoQuizId === conteudo.id ? 'Gerando...' : 'Gerar Quiz IA'}
+                          </button>
+                        )}
                         <Link
                           to={`/courses/${conteudo.id}`}
                           className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"

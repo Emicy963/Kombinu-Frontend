@@ -54,7 +54,19 @@ export const quizService = {
    * Submits quiz answers
    */
   submitQuiz: async (quizId: string, answers: Record<string, string>): Promise<QuizResult> => {
-    const response = await api.post(`/quizzes/${quizId}/submit/`, { answers });
+    const formattedAnswers = Object.entries(answers).map(([questionId, optionId]) => ({
+      question_id: questionId,
+      selected_option_id: optionId
+    }));
+    const response = await api.post(`/quizzes/${quizId}/submit/`, { answers: formattedAnswers });
+    return response.data;
+  },
+
+  /**
+   * Creates a manual quiz for a specific content
+   */
+  createManualQuiz: async (contentId: string, questions: any[]): Promise<any> => {
+    const response = await api.post(`/quizzes/contents/${contentId}/manual-quiz/`, { questions });
     return response.data;
   }
 };

@@ -40,7 +40,11 @@ export default function VisualizarConteudo() {
   };
 
   const handleIniciarQuiz = () => {
-    navigate(`/quiz/${id}`);
+    if (conteudo?.quiz_id) {
+       navigate(`/quiz/${conteudo.quiz_id}`);
+    } else {
+       navigate(`/quiz/${id}`);
+    }
   };
 
   const marcarComoConcluido = () => {
@@ -217,10 +221,14 @@ export default function VisualizarConteudo() {
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Vídeo Aula</h2>
               {conteudo.videoUrl ? (
                 <div className="aspect-w-16 aspect-h-9 bg-gray-900 rounded-xl overflow-hidden flex items-center justify-center relative">
-                   {/* Player Real Simplificado */}
+                   {/* Player Real Simplificado com Suporte a vários formatos do YouTube */}
                    <iframe 
                       className="w-full h-[400px]" 
-                      src={conteudo.videoUrl.replace("watch?v=", "embed/")} 
+                      src={
+                        conteudo.videoUrl.includes("youtu.be/") 
+                          ? conteudo.videoUrl.replace("youtu.be/", "youtube.com/embed/")
+                          : conteudo.videoUrl.replace("watch?v=", "embed/")
+                      } 
                       title={conteudo.title} 
                       frameBorder="0" 
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
@@ -248,6 +256,26 @@ export default function VisualizarConteudo() {
             </div>
           )}
         </div>
+
+        {/* Call to action for Quiz if exists */}
+        {conteudo.type !== 'quiz' && conteudo.has_quiz && (
+          <div className="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-8 border border-blue-100 dark:border-blue-900/30 text-center">
+            <div className="w-16 h-16 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center mx-auto mb-4">
+              <BookOpen className="w-8 h-8 text-blue-600 dark:text-blue-300" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Quiz Interativo Disponível!</h3>
+            <p className="text-gray-600 dark:text-gray-300 mb-6 max-w-xl mx-auto">
+              Teste seus conhecimentos sobre o que você acabou de aprender e ganhe pontos extras para subir no ranking.
+            </p>
+            <button
+              onClick={handleIniciarQuiz}
+              className="bg-blue-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors inline-flex items-center space-x-2 shadow-md"
+            >
+              <Play className="w-5 h-5" />
+              <span>Fazer o Quiz Agora</span>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

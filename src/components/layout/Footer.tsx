@@ -68,19 +68,19 @@ export const Footer: React.FC = () => {
     {
       icon: Mail,
       label: 'Email',
-      value: 'info@kombinu.com',
-      href: 'mailto:info@kombinu.com'
+      value: 'kombinu2025@gmail.com',
+      href: 'mailto:kombinu2025@gmail.com'
     },
     {
       icon: Phone,
       label: 'Telefone',
-      value: '+351 21 000 0000',
-      href: 'tel:+351210000000'
+      value: '+244 958568364',
+      href: 'tel:+244958568364'
     },
     {
       icon: MapPin,
       label: 'Endereço',
-      value: 'Lisboa, Portugal',
+      value: 'Luanda, Angola',
       href: '#'
     }
   ];
@@ -211,10 +211,10 @@ export const Footer: React.FC = () => {
                 onClick={() => {
                   const email = (document.getElementById('newsletter-email') as HTMLInputElement)?.value;
                   if (email) {
-                    // Enviar email para domagtech2023@gmail.com
+                    // Enviar email para kombinu2025@gmail.com
                     const subject = 'Nova Subscrição Newsletter KOMBINU';
                     const body = `Nova subscrição da newsletter:\n\nEmail: ${email}\nData: ${new Date().toLocaleString('pt-AO')}\nOrigem: Landing Page KOMBINU`;
-                    window.location.href = `mailto:domagtech2023@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                    window.location.href = `mailto:kombinu2025@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
                   }
                 }}
                 className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-r-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 dark:bg-dark-interactive-primary dark:hover:bg-blue-700 font-poppins"
